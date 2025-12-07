@@ -1,26 +1,40 @@
 "use client"
 
 import { motion } from "framer-motion"
+import { useMemo } from "react"
 
 export default function Credits() {
+  // Pre-generate star positions and animation properties to avoid hydration mismatch
+  const stars = useMemo(
+    () =>
+      [...Array(30)].map((_, i) => ({
+        left: (i * 13.7) % 100, // Deterministic but varied positions
+        top: (i * 21.3) % 100,
+        opacity: 0.05 + ((i * 7) % 15) / 100,
+        duration: 3 + ((i * 5) % 40) / 10,
+        delay: (i * 3) % 20 / 10,
+      })),
+    [],
+  )
+
   return (
     <section className="relative h-full flex items-center justify-center px-4 py-12">
       {/* Background subtle pattern */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {[...Array(30)].map((_, i) => (
+        {stars.map((star, i) => (
           <motion.div
             key={i}
             className="absolute w-1 h-1 bg-white rounded-full"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              opacity: 0.05 + Math.random() * 0.15,
+              left: `${star.left}%`,
+              top: `${star.top}%`,
+              opacity: star.opacity,
             }}
             animate={{ opacity: [0.05, 0.2, 0.05] }}
             transition={{
-              duration: 3 + Math.random() * 4,
+              duration: star.duration,
               repeat: Number.POSITIVE_INFINITY,
-              delay: Math.random() * 2,
+              delay: star.delay,
             }}
           />
         ))}
