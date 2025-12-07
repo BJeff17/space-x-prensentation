@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import HeroSection from "@/components/hero-section"
 import KeyFigures from "@/components/key-figures"
 import SolarOrgChart from "@/components/solar-org-chart"
+import Credits from "@/components/credits"
 import StarField from "@/components/star-field"
 import { ChevronUp, ChevronDown } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -11,7 +12,7 @@ import { motion, AnimatePresence } from "framer-motion"
 export default function Home() {
   const [currentSection, setCurrentSection] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
-  const sections = ["hero", "figures", "orgchart"]
+  const sections = ["hero", "figures", "orgchart", "credits"]
 
   const goToSection = useCallback(
     (direction: "up" | "down") => {
@@ -140,6 +141,18 @@ export default function Home() {
             className="h-full overflow-y-auto"
           >
             <SolarOrgChart />
+          </motion.div>
+        )}
+        {currentSection === 3 && (
+          <motion.div
+            key="credits"
+            initial={{ opacity: 0, y: 100 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -100 }}
+            transition={{ duration: 0.6, ease: "easeInOut" }}
+            className="h-full"
+          >
+            <Credits />
           </motion.div>
         )}
       </AnimatePresence>
