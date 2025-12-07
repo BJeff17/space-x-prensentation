@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { useRef, useState, useEffect } from "react"
 import { Users, Minimize2, Maximize2 } from "lucide-react"
+import FooterCredits from "./footer-credits"
 
 interface OrgMember {
   name: string
@@ -420,6 +421,9 @@ export default function SolarOrgChart() {
                   </div>
                 ))}
               </div>
+
+              {/* Footer Credits */}
+              <FooterCredits />
             </motion.div>
           ) : (
             <motion.div
@@ -492,6 +496,9 @@ export default function SolarOrgChart() {
                     </div>
                   ))}
                 </motion.div>
+
+                {/* Footer Credits */}
+                <FooterCredits />
               </div>
             </motion.div>
           )}
