@@ -2,13 +2,14 @@
 
 import { motion, AnimatePresence } from "framer-motion"
 import { useRef, useState, useEffect } from "react"
-import { Users, Minimize2, Maximize2 } from "lucide-react"
+import { Users, Minimize2, Maximize2, ArrowUp } from "lucide-react"
 
 interface OrgMember {
   name: string
   role: string
   level: number
   reports?: number
+  reportsTo?: string
 }
 
 const ceo: OrgMember = {
@@ -19,24 +20,32 @@ const ceo: OrgMember = {
 }
 
 const executives: OrgMember[] = [
-  { name: "Gwynne Shotwell", role: "President & COO", level: 1, reports: 70 },
-  { name: "Bret Johnsen", role: "CFO & President, Strategic Acquisitions", level: 1, reports: 28 },
-  { name: "Mark Juncosa", role: "VP, Vehicle Engineering", level: 1, reports: 52 },
-  { name: "Charles Kuehmann", role: "VP, Materials Engineering", level: 1, reports: 35 },
+  { name: "Gwynne Shotwell", role: "President & COO", level: 1, reports: 70, reportsTo: "Elon Musk" },
+  { name: "Bret Johnsen", role: "CFO & President, Strategic Acquisitions", level: 1, reports: 28, reportsTo: "Elon Musk" },
+  { name: "Mark Juncosa", role: "VP, Vehicle Engineering", level: 1, reports: 52, reportsTo: "Elon Musk" },
+  { name: "Charles Kuehmann", role: "VP, Materials Engineering", level: 1, reports: 35, reportsTo: "Elon Musk" },
 ]
 
 const engineers: OrgMember[] = [
-  { name: "Joe Petrzelka", role: "VP, Spacecraft Engineering", level: 2, reports: 60 },
-  { name: "Jonathan Greenhill", role: "Chief Government Officer", level: 2 },
-  { name: "Jason Fritch", role: "VP, WW Enterprise Sales", level: 2, reports: 2 },
-  { name: "Jessica Jensen", role: "VP, Customer Operations", level: 2, reports: 10 },
-  { name: "Alexander Wojcicki", role: "Principal Propulsion Engineer", level: 2, reports: 11 },
-  { name: "Craig Remillard", role: "Principal Engineer", level: 2, reports: 14 },
-  { name: "Ali Sajjadi", role: "Principal RF Engineer", level: 2 },
-  { name: "Anthony Geoffron", role: "Principal System Engineer", level: 2 },
-  { name: "Andy Borrell", role: "Senior Software Engineer", level: 2 },
-  { name: "Michael Zou", role: "Senior Software Engineer", level: 2 },
+  { name: "Joe Petrzelka", role: "VP, Spacecraft Engineering", level: 2, reports: 60, reportsTo: "Gwynne Shotwell" },
+  { name: "Jonathan Greenhill", role: "Chief Government Officer", level: 2, reportsTo: "Gwynne Shotwell" },
+  { name: "Jason Fritch", role: "VP, WW Enterprise Sales", level: 2, reports: 2, reportsTo: "Bret Johnsen" },
+  { name: "Jessica Jensen", role: "VP, Customer Operations", level: 2, reports: 10, reportsTo: "Gwynne Shotwell" },
+  { name: "Alexander Wojcicki", role: "Principal Propulsion Engineer", level: 2, reports: 11, reportsTo: "Mark Juncosa" },
+  { name: "Craig Remillard", role: "Principal Engineer", level: 2, reports: 14, reportsTo: "Mark Juncosa" },
+  { name: "Ali Sajjadi", role: "Principal RF Engineer", level: 2, reportsTo: "Charles Kuehmann" },
+  { name: "Anthony Geoffron", role: "Principal System Engineer", level: 2, reportsTo: "Charles Kuehmann" },
+  { name: "Andy Borrell", role: "Senior Software Engineer", level: 2, reportsTo: "Mark Juncosa" },
+  { name: "Michael Zou", role: "Senior Software Engineer", level: 2, reportsTo: "Mark Juncosa" },
 ]
+
+// Group engineers by their manager
+const engineersByManager = engineers.reduce((acc, eng) => {
+  const manager = eng.reportsTo || "Unknown"
+  if (!acc[manager]) acc[manager] = []
+  acc[manager].push(eng)
+  return acc
+}, {} as Record<string, OrgMember[]>)
 
 // Enhanced detailed rocket with particle effects
 function DetailedRocket({ size = 60 }: { size?: number }) {
@@ -188,6 +197,12 @@ function CompactOrgCard({ member, delay, isCollapsed }: { member: OrgMember; del
         <div className="text-left">
           <p className="text-xs font-semibold text-foreground truncate max-w-[120px]">{member.name}</p>
           <p className="text-[10px] text-muted-foreground truncate max-w-[120px]">{member.role.split(",")[0]}</p>
+          {member.reportsTo && (
+            <p className="text-[9px] text-primary/70 truncate max-w-[120px] flex items-center gap-0.5">
+              <ArrowUp className="w-2 h-2" />
+              {member.reportsTo}
+            </p>
+          )}
         </div>
       </motion.div>
     )
@@ -255,14 +270,14 @@ function CompactOrgCard({ member, delay, isCollapsed }: { member: OrgMember; del
       >
         <div className={`h-1.5 bg-gradient-to-r ${style.bg} to-transparent`} />
 
-        <div className="p-5 text-center">
+        <div className="p-4 text-center">
           <motion.div
-            className={`w-14 h-14 mx-auto rounded-full bg-gradient-to-br ${style.bg} to-slate-700 flex items-center justify-center mb-3 shadow-lg ring-2 ring-offset-2 ring-offset-card ring-${style.color}`}
+            className={`w-12 h-12 mx-auto rounded-full bg-gradient-to-br ${style.bg} to-slate-700 flex items-center justify-center mb-2 shadow-lg ring-2 ring-offset-2 ring-offset-card ring-${style.color}`}
             initial={{ scale: 0 }}
             animate={phase === "landed" ? { scale: 1 } : { scale: 0 }}
             transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
           >
-            <span className="text-foreground font-bold text-sm drop-shadow">
+            <span className="text-foreground font-bold text-xs drop-shadow">
               {member.name
                 .split(" ")
                 .map((n) => n[0])
@@ -271,7 +286,7 @@ function CompactOrgCard({ member, delay, isCollapsed }: { member: OrgMember; del
           </motion.div>
 
           <motion.h3
-            className="font-bold text-foreground text-sm mb-1"
+            className="font-bold text-foreground text-sm mb-0.5"
             initial={{ opacity: 0, y: 10 }}
             animate={phase === "landed" ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.3 }}
@@ -288,9 +303,21 @@ function CompactOrgCard({ member, delay, isCollapsed }: { member: OrgMember; del
             {member.role}
           </motion.p>
 
+          {member.reportsTo && (
+            <motion.div
+              className="flex items-center justify-center gap-1 mt-1.5 text-primary/80"
+              initial={{ opacity: 0 }}
+              animate={phase === "landed" ? { opacity: 1 } : {}}
+              transition={{ delay: 0.45 }}
+            >
+              <ArrowUp className="w-3 h-3" />
+              <span className="text-[10px] font-medium">Reports to {member.reportsTo}</span>
+            </motion.div>
+          )}
+
           {member.reports && (
             <motion.div
-              className="flex items-center justify-center gap-1 mt-2 text-primary"
+              className="flex items-center justify-center gap-1 mt-1 text-primary"
               initial={{ opacity: 0 }}
               animate={phase === "landed" ? { opacity: 1 } : {}}
               transition={{ delay: 0.5 }}
@@ -324,7 +351,7 @@ export default function SolarOrgChart() {
   const [isCollapsed, setIsCollapsed] = useState(false)
 
   return (
-    <section className="relative h-full py-8 px-4 overflow-hidden" ref={containerRef}>
+    <section className="relative h-full py-4 px-2 sm:px-4 overflow-hidden flex flex-col" ref={containerRef}>
       {/* Ambient background rockets */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(8)].map((_, i) => (
@@ -342,24 +369,24 @@ export default function SolarOrgChart() {
         ))}
       </div>
 
-      <div className={`max-w-7xl mx-auto relative z-10 h-full flex flex-col ${isCollapsed ? "" : "overflow-y-auto"}`}>
+      <div className="w-full max-w-none mx-auto relative z-10 flex-1 flex flex-col min-h-0">
         {/* Header with collapse button */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-8 flex-shrink-0"
+          transition={{ duration: 0.6 }}
+          className="text-center mb-4 flex-shrink-0"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-3 text-foreground">
+          <h2 className="text-3xl md:text-4xl font-bold mb-2 text-foreground">
             SpaceX <span className="text-primary">Organization</span>
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto mb-4">
-            Discover the hierarchical structure of SpaceX, delivered by our fastest rockets
+          <p className="text-muted-foreground text-sm max-w-xl mx-auto mb-3">
+            Discover the hierarchical structure of SpaceX with clear reporting relationships
           </p>
 
           <motion.button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-card/80 border border-border rounded-lg text-sm text-foreground hover:bg-card hover:border-primary transition-colors"
+            className="inline-flex items-center gap-2 px-3 py-1.5 bg-card/80 border border-border rounded-lg text-sm text-foreground hover:bg-card hover:border-primary transition-colors"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -386,7 +413,7 @@ export default function SolarOrgChart() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3 }}
-              className="flex-1 flex flex-col items-center justify-center gap-6"
+              className="flex-1 flex flex-col items-center justify-center gap-4 overflow-y-auto px-2"
             >
               {/* CEO */}
               <div>
@@ -394,28 +421,39 @@ export default function SolarOrgChart() {
               </div>
 
               {/* Executives row */}
-              <div className="flex flex-wrap justify-center gap-3">
+              <div className="flex flex-wrap justify-center gap-2">
                 {executives.map((exec) => (
                   <CompactOrgCard key={exec.name} member={exec} delay={0} isCollapsed={true} />
                 ))}
               </div>
 
-              {/* Engineers grid */}
-              <div className="flex flex-wrap justify-center gap-2 max-w-4xl">
-                {engineers.map((eng) => (
-                  <CompactOrgCard key={eng.name} member={eng} delay={0} isCollapsed={true} />
-                ))}
+              {/* Engineers grouped by manager */}
+              <div className="flex flex-wrap justify-center gap-4 w-full max-w-6xl">
+                {executives.map((exec) => {
+                  const teamMembers = engineersByManager[exec.name] || []
+                  if (teamMembers.length === 0) return null
+                  return (
+                    <div key={exec.name} className="flex flex-col items-center gap-1 p-2 rounded-lg bg-card/30 border border-border/30">
+                      <span className="text-[10px] text-primary font-medium mb-1">Team {exec.name.split(" ")[1]}</span>
+                      <div className="flex flex-wrap justify-center gap-1.5">
+                        {teamMembers.map((eng) => (
+                          <CompactOrgCard key={eng.name} member={eng} delay={0} isCollapsed={true} />
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
 
               {/* Legend */}
-              <div className="flex flex-wrap justify-center gap-6 mt-4">
+              <div className="flex flex-wrap justify-center gap-4 mt-2">
                 {[
                   { label: "CEO & Founder", color: "bg-accent" },
                   { label: "Executive Leadership", color: "bg-primary" },
                   { label: "VPs & Senior Engineers", color: "bg-emerald-500" },
                 ].map((item) => (
                   <div key={item.label} className="flex items-center gap-2">
-                    <div className={`w-3 h-3 rounded-full ${item.color}`} />
+                    <div className={`w-2.5 h-2.5 rounded-full ${item.color}`} />
                     <span className="text-xs text-muted-foreground">{item.label}</span>
                   </div>
                 ))}
@@ -428,49 +466,74 @@ export default function SolarOrgChart() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3 }}
-              className="flex-1 overflow-y-auto pb-8"
+              className="flex-1 overflow-y-auto pb-4 min-h-0"
             >
-              <div className="flex flex-col items-center">
+              <div className="flex flex-col items-center px-2">
                 {/* CEO Level */}
                 <CompactOrgCard member={ceo} delay={0.2} isCollapsed={false} />
-                <ConnectionLine delay={1.8} height={50} isCollapsed={false} />
+                <ConnectionLine delay={1.8} height={30} isCollapsed={false} />
 
-                {/* Executive Level */}
+                {/* Executive Level with their teams */}
                 <motion.div
-                  className="w-full max-w-4xl"
+                  className="w-full"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 2 }}
                 >
-                  <div className="h-0.5 bg-gradient-to-r from-transparent via-primary/40 to-transparent mb-4" />
-                  <div className="flex flex-wrap justify-center gap-6">
-                    {executives.map((exec, idx) => (
-                      <div key={exec.name} className="flex flex-col items-center">
-                        <div className="w-0.5 h-4 bg-primary/40" />
-                        <CompactOrgCard member={exec} delay={2.2 + idx * 0.3} isCollapsed={false} />
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-
-                {/* Connection to engineers */}
-                <ConnectionLine delay={4} height={40} isCollapsed={false} />
-
-                {/* Engineers Level */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 4.2 }}
-                  className="w-full"
-                >
-                  <div className="h-0.5 bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent mb-4" />
-                  <div className="flex flex-wrap justify-center gap-4">
-                    {engineers.map((eng, idx) => (
-                      <div key={eng.name} className="flex flex-col items-center">
-                        <div className="w-0.5 h-3 bg-emerald-500/30" />
-                        <CompactOrgCard member={eng} delay={4.4 + idx * 0.15} isCollapsed={false} />
-                      </div>
-                    ))}
+                  <div className="h-0.5 bg-gradient-to-r from-transparent via-primary/40 to-transparent mb-3" />
+                  
+                  {/* Grid of executives with their teams */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 max-w-7xl mx-auto">
+                    {executives.map((exec, execIdx) => {
+                      const teamMembers = engineersByManager[exec.name] || []
+                      return (
+                        <motion.div
+                          key={exec.name}
+                          className="flex flex-col items-center bg-card/20 rounded-xl p-3 border border-border/30"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 2.2 + execIdx * 0.2 }}
+                        >
+                          {/* Executive */}
+                          <div className="flex flex-col items-center">
+                            <div className="w-0.5 h-3 bg-primary/40" />
+                            <CompactOrgCard member={exec} delay={2.2 + execIdx * 0.3} isCollapsed={false} />
+                          </div>
+                          
+                          {/* Team members under this executive */}
+                          {teamMembers.length > 0 && (
+                            <>
+                              <motion.div
+                                className="w-0.5 h-4 bg-emerald-500/40 mt-2"
+                                initial={{ scaleY: 0 }}
+                                animate={{ scaleY: 1 }}
+                                transition={{ delay: 3 + execIdx * 0.3 }}
+                              />
+                              <motion.div
+                                className="text-[10px] text-emerald-400/80 font-medium my-1"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 3.1 + execIdx * 0.3 }}
+                              >
+                                Direct Reports
+                              </motion.div>
+                              <div className="flex flex-wrap justify-center gap-2">
+                                {teamMembers.map((eng, engIdx) => (
+                                  <div key={eng.name} className="flex flex-col items-center">
+                                    <div className="w-0.5 h-2 bg-emerald-500/30" />
+                                    <CompactOrgCard 
+                                      member={eng} 
+                                      delay={3.5 + execIdx * 0.3 + engIdx * 0.1} 
+                                      isCollapsed={false} 
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </>
+                          )}
+                        </motion.div>
+                      )
+                    })}
                   </div>
                 </motion.div>
 
@@ -478,17 +541,17 @@ export default function SolarOrgChart() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 7 }}
-                  className="flex flex-wrap justify-center gap-8 mt-16"
+                  transition={{ duration: 0.8, delay: 5 }}
+                  className="flex flex-wrap justify-center gap-6 mt-6"
                 >
                   {[
                     { label: "CEO & Founder", color: "bg-accent" },
                     { label: "Executive Leadership", color: "bg-primary" },
                     { label: "VPs & Senior Engineers", color: "bg-emerald-500" },
                   ].map((item) => (
-                    <div key={item.label} className="flex items-center gap-3">
-                      <div className={`w-4 h-4 rounded-full ${item.color}`} />
-                      <span className="text-sm text-muted-foreground">{item.label}</span>
+                    <div key={item.label} className="flex items-center gap-2">
+                      <div className={`w-3 h-3 rounded-full ${item.color}`} />
+                      <span className="text-xs text-muted-foreground">{item.label}</span>
                     </div>
                   ))}
                 </motion.div>
