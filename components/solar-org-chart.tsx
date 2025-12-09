@@ -39,13 +39,19 @@ const engineers: OrgMember[] = [
   { name: "Michael Zou", role: "Senior Software Engineer", level: 2, reportsTo: "Mark Juncosa" },
 ]
 
-// Group engineers by their manager
+// Group engineers by their manager - only include engineers that have a valid reportsTo
 const engineersByManager = engineers.reduce((acc, eng) => {
-  const manager = eng.reportsTo || "Unknown"
-  if (!acc[manager]) acc[manager] = []
-  acc[manager].push(eng)
+  if (!eng.reportsTo) return acc
+  if (!acc[eng.reportsTo]) acc[eng.reportsTo] = []
+  acc[eng.reportsTo].push(eng)
   return acc
 }, {} as Record<string, OrgMember[]>)
+
+// Helper function to get the last name for team labels
+const getLastName = (fullName: string): string => {
+  const parts = fullName.split(" ")
+  return parts[parts.length - 1]
+}
 
 // Enhanced detailed rocket with particle effects
 function DetailedRocket({ size = 60 }: { size?: number }) {
@@ -434,7 +440,7 @@ export default function SolarOrgChart() {
                   if (teamMembers.length === 0) return null
                   return (
                     <div key={exec.name} className="flex flex-col items-center gap-1 p-2 rounded-lg bg-card/30 border border-border/30">
-                      <span className="text-[10px] text-primary font-medium mb-1">Team {exec.name.split(" ")[1]}</span>
+                      <span className="text-[10px] text-primary font-medium mb-1">Team {getLastName(exec.name)}</span>
                       <div className="flex flex-wrap justify-center gap-1.5">
                         {teamMembers.map((eng) => (
                           <CompactOrgCard key={eng.name} member={eng} delay={0} isCollapsed={true} />
