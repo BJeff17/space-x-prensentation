@@ -1,215 +1,146 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import { useRef, useState, useEffect } from "react";
-import { Users, Minimize2, Maximize2 } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { Rocket } from "lucide-react";
 
-interface OrgMember {
-  name: string;
-  role: string;
-  level: number;
-  reports?: number;
-  department?: string;
-  children?: OrgMember[];
-}
-
-interface Department {
-  head: OrgMember;
-  subdivisions?: Department[];
-}
-
-// Structure basée sur l'organigramme SpaceX réel
-const orgStructure: OrgMember = {
-  name: "Elon Musk",
-  role: "CEO, CTO & Director",
-  level: 0,
-  reports: 301,
-  children: [
-    // Directeurs sous CEO
+const HIERARCHY = {
+  board: {
+    title: "Board of Directors",
+    members: "4 Directors",
+  },
+  ceo: {
+    name: "Elon Musk",
+    title: "CEO, CTO & Director",
+    reports: 301,
+  },
+  departments: [
     {
-      name: "Director",
-      role: "Director",
-      level: 1,
-      department: "Board",
-    },
-    {
-      name: "Director",
-      role: "Director",
-      level: 1,
-      department: "Board",
-    },
-    {
-      name: "Director",
-      role: "Director",
-      level: 1,
-      department: "Board",
-    },
-    {
-      name: "Director",
-      role: "Director",
-      level: 1,
-      department: "Board",
-    },
-    // CFO & Strategic Acquisitions Branch
-    {
-      name: "Bret Johnsen",
-      role: "CFO & Strategic Acquisitions",
-      level: 1,
-      reports: 28,
-      department: "Finance",
-      children: [
+      head: {
+        name: "Bret Johnsen",
+        title: "CFO & Strategic Acquisitions",
+        reports: 28,
+      },
+      reports: [
         {
-          name: "Accounting Dept",
-          role: "Accounting",
-          level: 2,
-          department: "Accounting",
-        },
-        {
-          name: "Finance Dept",
-          role: "Finance",
-          level: 2,
+          name: "Accounting",
+          title: "Accounting Department",
           department: "Finance",
         },
         {
-          name: "IT Dept",
-          role: "IT",
-          level: 2,
-          department: "IT",
+          name: "Finance",
+          title: "Finance Department",
+          department: "Finance",
+        },
+        {
+          name: "IT",
+          title: "IT Department",
+          department: "Technology",
         },
       ],
     },
-    // President, COO & Director Branch
     {
-      name: "Gwynne Shotwell",
-      role: "President, COO & Director",
-      level: 1,
-      reports: 70,
-      department: "Operations",
-      children: [
+      head: {
+        name: "Gwynne Shotwell",
+        title: "President, COO & Director",
+        reports: 70,
+      },
+      reports: [
         {
           name: "Assistant to President",
-          role: "Assistant to President & COO",
-          level: 2,
+          title: "Assistant to President & COO",
           department: "Operations",
         },
         {
           name: "Early Careers",
-          role: "Early Careers & Programming",
-          level: 2,
+          title: "Early Careers & Programming",
           department: "HR",
         },
         {
           name: "Starlink Production",
-          role: "Starlink Production Engineering",
-          level: 2,
+          title: "Starlink Production Engineering",
           department: "Starlink",
-        },
-        {
-          name: "Mission Management",
-          role: "Mission Management",
-          level: 2,
-          department: "Operations",
+          reports: [
+            {
+              name: "Mission Management",
+              title: "Mission Management",
+              department: "Operations",
+            },
+          ],
         },
         {
           name: "Build & Flight",
-          role: "Build & Flight Reliability",
-          level: 2,
+          title: "Build & Flight Reliability",
           department: "Operations",
         },
         {
           name: "Customer Operations",
-          role: "Customer Operations & Integration",
-          level: 2,
+          title: "Customer Operations & Integration",
           department: "Operations",
         },
         {
           name: "Commercial Sales",
-          role: "Commercial Sales",
-          level: 2,
+          title: "Commercial Sales",
           department: "Sales",
-          children: [
+          reports: [
             {
               name: "Communications",
-              role: "Communications",
-              level: 3,
-              department: "Sales",
+              title: "Communications",
+              department: "Marketing",
             },
           ],
         },
         {
           name: "HR",
-          role: "HR",
-          level: 2,
+          title: "Human Resources",
           department: "HR",
         },
         {
           name: "Launch",
-          role: "Launch",
-          level: 2,
+          title: "Launch Operations",
           department: "Launch",
-          children: [
+          reports: [
             {
               name: "Texas Test & Launch",
-              role: "Texas Test & Launch",
-              level: 3,
+              title: "Texas Test & Launch",
               department: "Launch",
             },
           ],
         },
         {
           name: "Legal",
-          role: "Legal",
-          level: 2,
+          title: "Legal Department",
           department: "Legal",
-          children: [
+          reports: [
             {
               name: "Acting Legal",
-              role: "Acting Legal",
-              level: 3,
+              title: "Acting Legal",
               department: "Legal",
             },
             {
               name: "Satellite Policy",
-              role: "Satellite Policy",
-              level: 3,
-              department: "Legal",
-            },
-            {
-              name: "Satellite Policy",
-              role: "Satellite Policy",
-              level: 3,
+              title: "Satellite Policy",
               department: "Legal",
             },
           ],
         },
         {
           name: "Materials Engineering",
-          role: "Materials Engineering",
-          level: 2,
+          title: "Materials Engineering",
           department: "Engineering",
-        },
-        {
-          name: "Private Astronaut",
-          role: "Private Astronaut Recruitment",
-          level: 2,
-          department: "Operations",
         },
         {
           name: "Vehicle Engineering",
-          role: "Vehicle Engineering",
-          level: 2,
+          title: "Vehicle Engineering",
           department: "Engineering",
-          children: [
+          reports: [
             {
               name: "Starship Engineering",
-              role: "Starship Engineering",
-              level: 3,
+              title: "Starship Engineering",
               department: "Engineering",
             },
             {
               name: "Application Software",
-              role: "Application Software",
-              level: 3,
+              title: "Application Software",
               department: "Engineering",
             },
           ],
@@ -219,594 +150,314 @@ const orgStructure: OrgMember = {
   ],
 };
 
-// Enhanced detailed rocket with particle effects
-function DetailedRocket({ size = 60 }: { size?: number }) {
-  return (
-    <svg width={size} height={size * 1.5} viewBox="0 0 60 90" fill="none">
-      <path
-        d="M30 0C30 0 10 20 10 45C10 62 18 72 18 72H42C42 72 50 62 50 45C50 20 30 0 30 0Z"
-        fill="url(#detailedBody)"
-        stroke="#94a3b8"
-        strokeWidth="1"
-      />
-      <ellipse
-        cx="30"
-        cy="32"
-        rx="9"
-        ry="11"
-        fill="#0c1929"
-        stroke="#38bdf8"
-        strokeWidth="2"
-      />
-      <ellipse cx="30" cy="30" rx="5" ry="6" fill="#0ea5e9" opacity="0.4" />
-      <ellipse cx="28" cy="28" rx="2" ry="2" fill="#bae6fd" opacity="0.8" />
-      <path d="M10 45L-3 70L10 62V45Z" fill="#b91c1c" />
-      <path d="M50 45L63 70L50 62V45Z" fill="#b91c1c" />
-      <path d="M24 68H36V82H24V68Z" fill="#6b7280" />
-      <path d="M27 68H33V82H27V68Z" fill="#9ca3af" />
-      <motion.g
-        animate={{ scaleY: [1, 1.4, 1], opacity: [1, 0.85, 1] }}
-        transition={{ duration: 0.1, repeat: Number.POSITIVE_INFINITY }}
-      >
-        <ellipse cx="30" cy="88" rx="12" ry="14" fill="#ea580c" />
-        <ellipse cx="30" cy="85" rx="9" ry="10" fill="#f97316" />
-        <ellipse cx="30" cy="82" rx="6" ry="7" fill="#fbbf24" />
-        <ellipse cx="30" cy="80" rx="3" ry="4" fill="#fef3c7" />
-      </motion.g>
-      {[...Array(6)].map((_, i) => (
-        <motion.circle
-          key={i}
-          cx={25 + i * 2}
-          cy={90}
-          r={1}
-          fill="#fbbf24"
-          animate={{
-            y: [0, 20 + Math.random() * 15],
-            x: [(i - 2.5) * 3, (i - 2.5) * 8],
-            opacity: [1, 0],
-          }}
-          transition={{
-            duration: 0.5,
-            repeat: Number.POSITIVE_INFINITY,
-            delay: i * 0.08,
-          }}
-        />
-      ))}
-      <defs>
-        <linearGradient
-          id="detailedBody"
-          x1="30"
-          y1="0"
-          x2="30"
-          y2="72"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#ffffff" />
-          <stop offset="0.5" stopColor="#f1f5f9" />
-          <stop offset="1" stopColor="#cbd5e1" />
-        </linearGradient>
-      </defs>
-    </svg>
-  );
+interface CardProps {
+  delay: number;
+  isLoaded: boolean;
 }
 
-// Impressive smoke/landing effect
-function LandingEffect({ isActive }: { isActive: boolean }) {
-  if (!isActive) return null;
-
+function BoardCard({ delay, isLoaded }: CardProps) {
   return (
-    <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 pointer-events-none">
-      {[...Array(12)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute rounded-full"
-          style={{
-            background: `radial-gradient(circle, rgba(148,163,184,${
-              0.6 - i * 0.04
-            }) 0%, transparent 70%)`,
-            width: 20 + i * 4,
-            height: 20 + i * 4,
-          }}
-          initial={{ y: 0, x: 0, scale: 0.2, opacity: 0.9 }}
-          animate={{
-            y: [0, 50 + i * 8, 100 + i * 12],
-            x: [
-              (i % 2 === 0 ? 1 : -1) * (i * 8),
-              (i % 2 === 0 ? 1 : -1) * (20 + i * 12),
-              (i % 2 === 0 ? 1 : -1) * (40 + i * 15),
-            ],
-            scale: [0.2, 1.2, 2],
-            opacity: [0.9, 0.5, 0],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Number.POSITIVE_INFINITY,
-            delay: i * 0.1,
-            ease: "easeOut",
-          }}
-        />
-      ))}
-      <motion.div
-        className="absolute w-32 h-8 rounded-full bg-orange-500/30 blur-xl"
-        style={{ bottom: -10, left: -64 }}
-        animate={{ opacity: [0.5, 0.8, 0.5], scale: [1, 1.2, 1] }}
-        transition={{ duration: 0.3, repeat: Number.POSITIVE_INFINITY }}
-      />
+    <div
+      className={`relative rounded-lg border-2 border-foreground bg-card shadow-md transition-all duration-500 hover:scale-105 px-6 py-3 ${
+        isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+      }`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      <div className="flex flex-col items-center text-center gap-1">
+        <div className="flex items-center gap-2">
+          <Rocket size={16} className="text-foreground" />
+          <p className="font-black text-foreground text-sm tracking-tight">
+            {HIERARCHY.board.title}
+          </p>
+        </div>
+        <p className="text-muted-foreground text-[10px]">
+          {HIERARCHY.board.members}
+        </p>
+      </div>
     </div>
   );
 }
 
-function CompactOrgCard({
-  member,
-  delay,
-  isCollapsed,
-}: {
-  member: OrgMember;
-  delay: number;
-  isCollapsed: boolean;
-}) {
-  const [phase, setPhase] = useState<"flying" | "landing" | "landed">("flying");
-  const [hasAnimated, setHasAnimated] = useState(false);
-
-  useEffect(() => {
-    if (hasAnimated) {
-      setPhase("landed");
-      return;
-    }
-    const landingTimer = setTimeout(
-      () => setPhase("landing"),
-      delay * 1000 + 800
-    );
-    const landedTimer = setTimeout(() => {
-      setPhase("landed");
-      setHasAnimated(true);
-    }, delay * 1000 + 1500);
-    return () => {
-      clearTimeout(landingTimer);
-      clearTimeout(landedTimer);
-    };
-  }, [delay, hasAnimated]);
-
-  const levelStyles = {
-    0: { border: "border-accent", bg: "from-accent", color: "accent" },
-    1: { border: "border-primary", bg: "from-primary", color: "primary" },
-    2: {
-      border: "border-emerald-500",
-      bg: "from-emerald-500",
-      color: "emerald-500",
-    },
-    3: { border: "border-blue-400", bg: "from-blue-400", color: "blue-400" },
-  };
-
-  const style =
-    levelStyles[member.level as keyof typeof levelStyles] || levelStyles[2];
-
-  // Collapsed compact view
-  if (isCollapsed) {
-    return (
-      <motion.div
-        layout
-        className={`relative flex items-center gap-2 px-3 py-2 bg-card/95 border ${style.border} rounded-lg backdrop-blur-sm`}
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
-      >
-        <div
-          className={`w-8 h-8 rounded-full bg-gradient-to-br ${style.bg} to-slate-700 flex items-center justify-center`}
-        >
-          <span className="text-foreground font-bold text-xs">
-            {member.name
-              .split(" ")
-              .map((n) => n[0])
-              .join("")}
-          </span>
-        </div>
-        <div className="text-left">
-          <p className="text-xs font-semibold text-foreground truncate max-w-[120px]">
-            {member.name}
-          </p>
-          <p className="text-[10px] text-muted-foreground truncate max-w-[120px]">
-            {member.role.split(",")[0]}
-          </p>
-        </div>
-      </motion.div>
-    );
-  }
-
-  // Full expanded view with rocket animation
-  const sizeClass =
-    member.level === 0 ? "w-72" : member.level === 1 ? "w-56" : "w-48";
-
+function CEOCard({ delay, isLoaded }: CardProps) {
   return (
-    <div className={`relative ${sizeClass}`}>
-      {/* Flying rocket */}
-      {phase === "flying" && (
-        <motion.div
-          className="absolute left-1/2 -translate-x-1/2 z-30"
-          initial={{ y: -300, opacity: 0, rotate: 0 }}
-          animate={{ y: -30, opacity: 1, rotate: [0, 2, -2, 0] }}
-          transition={{
-            y: { duration: 0.8, delay, ease: [0.25, 0.46, 0.45, 0.94] },
-            opacity: { duration: 0.3, delay },
-            rotate: { duration: 0.5, delay: delay + 0.3, repeat: 2 },
-          }}
-        >
-          <DetailedRocket
-            size={member.level === 0 ? 55 : member.level === 1 ? 45 : 35}
-          />
-        </motion.div>
-      )}
+    <div
+      className={`relative rounded-lg border-2 border-accent bg-accent/5 shadow-lg transition-all duration-500 hover:scale-105 p-4 ${
+        isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+      }`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      <div className="flex flex-col items-center text-center gap-2">
+        <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-accent bg-gradient-to-br from-accent to-accent/50 flex items-center justify-center">
+          <Rocket size={32} className="text-foreground" />
+        </div>
+        <div>
+          <p className="font-black text-foreground text-sm">
+            {HIERARCHY.ceo.name}
+          </p>
+          <p className="text-accent text-xs font-semibold">
+            {HIERARCHY.ceo.title}
+          </p>
+          {HIERARCHY.ceo.reports && (
+            <p className="text-muted-foreground text-[10px] mt-1">
+              {HIERARCHY.ceo.reports} reports
+            </p>
+          )}
+        </div>
+      </div>
+      <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-accent rounded-full animate-pulse" />
+    </div>
+  );
+}
 
-      {/* Landing rocket with effects */}
-      {phase === "landing" && (
+function DepartmentCard({
+  department,
+  delay,
+  isLoaded,
+}: {
+  department: (typeof HIERARCHY.departments)[0];
+  delay: number;
+  isLoaded: boolean;
+}) {
+  return (
+    <div
+      className={`flex flex-col items-center transition-all duration-500 ${
+        isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+      }`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {/* Vertical connector from horizontal line */}
+      <div className="w-0.5 h-6 bg-border" />
+
+      {/* Department Head Card */}
+      <div className="relative rounded-lg border-2 border-primary bg-primary/10 shadow-lg p-4 min-w-40 hover:scale-105 transition-transform">
+        <div className="flex flex-col items-center text-center gap-2">
+          <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-primary bg-gradient-to-br from-primary to-primary/50 flex items-center justify-center">
+            <Rocket size={20} className="text-foreground" />
+          </div>
+          <div>
+            <p className="font-black text-foreground text-xs">
+              {department.head.name}
+            </p>
+            <p className="text-primary text-[10px] font-semibold">
+              {department.head.title}
+            </p>
+            {department.head.reports && (
+              <p className="text-muted-foreground text-[9px] mt-0.5">
+                {department.head.reports} reports
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Connector to direct reports */}
+      {department.reports && department.reports.length > 0 && (
         <>
-          <motion.div
-            className="absolute left-1/2 -translate-x-1/2 z-30"
-            initial={{ y: -30 }}
-            animate={{ y: -15, scale: [1, 0.95, 1] }}
-            transition={{ duration: 0.4 }}
-          >
-            <DetailedRocket
-              size={member.level === 0 ? 55 : member.level === 1 ? 45 : 35}
-            />
-          </motion.div>
-          <LandingEffect isActive={true} />
-        </>
-      )}
+          <div className="w-0.5 h-6 bg-border" />
 
-      {/* Landed mini rocket */}
-      {phase === "landed" && (
-        <motion.div
-          className="absolute -top-6 left-1/2 -translate-x-1/2 z-20"
-          initial={{ scale: 1, opacity: 1 }}
-          animate={{ scale: 0.4, opacity: 0.9 }}
-          transition={{ duration: 0.3 }}
-        >
-          <svg width="30" height="40" viewBox="0 0 60 90" fill="none">
-            <path
-              d="M30 0C30 0 10 20 10 45C10 62 18 72 18 72H42C42 72 50 62 50 45C50 20 30 0 30 0Z"
-              fill="#e2e8f0"
-            />
-            <ellipse cx="30" cy="32" rx="9" ry="11" fill="#0c1929" />
-            <path d="M10 45L-3 70L10 62V45Z" fill="#b91c1c" />
-            <path d="M50 45L63 70L50 62V45Z" fill="#b91c1c" />
-          </svg>
-        </motion.div>
-      )}
-
-      {/* Card */}
-      <motion.div
-        className={`relative bg-card/95 border-2 ${style.border} rounded-xl overflow-hidden shadow-2xl backdrop-blur-sm`}
-        initial={{ opacity: 0, scale: 0.7, y: 40 }}
-        animate={
-          phase === "landed"
-            ? { opacity: 1, scale: 1, y: 0 }
-            : { opacity: 0, scale: 0.7, y: 40 }
-        }
-        transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
-      >
-        <div className={`h-1.5 bg-gradient-to-r ${style.bg} to-transparent`} />
-
-        <div className="p-5 text-center">
-          <motion.div
-            className={`w-14 h-14 mx-auto rounded-full bg-gradient-to-br ${style.bg} to-slate-700 flex items-center justify-center mb-3 shadow-lg ring-2 ring-offset-2 ring-offset-card ring-${style.color}`}
-            initial={{ scale: 0 }}
-            animate={phase === "landed" ? { scale: 1 } : { scale: 0 }}
-            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-          >
-            <span className="text-foreground font-bold text-sm drop-shadow">
-              {member.name
-                .split(" ")
-                .map((n) => n[0])
-                .join("")}
-            </span>
-          </motion.div>
-
-          <motion.h3
-            className="font-bold text-foreground text-sm mb-1"
-            initial={{ opacity: 0, y: 10 }}
-            animate={phase === "landed" ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.3 }}
-          >
-            {member.name}
-          </motion.h3>
-
-          <motion.p
-            className="text-xs text-muted-foreground leading-tight"
-            initial={{ opacity: 0 }}
-            animate={phase === "landed" ? { opacity: 1 } : {}}
-            transition={{ delay: 0.4 }}
-          >
-            {member.role}
-          </motion.p>
-
-          {member.reports && (
-            <motion.div
-              className="flex items-center justify-center gap-1 mt-2 text-primary"
-              initial={{ opacity: 0 }}
-              animate={phase === "landed" ? { opacity: 1 } : {}}
-              transition={{ delay: 0.5 }}
-            >
-              <Users className="w-3 h-3" />
-              <span className="text-xs font-medium">
-                {member.reports} reports
-              </span>
-            </motion.div>
-          )}
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
-// Fonction récursive pour collecter tous les membres de l'organigramme
-function flattenOrgStructure(
-  member: OrgMember,
-  path: string[] = []
-): Array<{ member: OrgMember; path: string[] }> {
-  const currentPath = [...path, member.name];
-  const result: Array<{ member: OrgMember; path: string[] }> = [
-    { member, path: currentPath },
-  ];
-
-  if (member.children) {
-    member.children.forEach((child) => {
-      result.push(...flattenOrgStructure(child, currentPath));
-    });
-  }
-
-  return result;
-}
-
-// Composant pour afficher un nœud hiérarchique avec ses enfants
-function HierarchyNode({
-  member,
-  delay,
-  isCollapsed,
-  depth = 0,
-}: {
-  member: OrgMember;
-  delay: number;
-  isCollapsed: boolean;
-  depth?: number;
-}) {
-  const hasChildren = member.children && member.children.length > 0;
-
-  return (
-    <div className="flex flex-col items-center">
-      {/* Le nœud lui-même */}
-      <CompactOrgCard member={member} delay={delay} isCollapsed={isCollapsed} />
-
-      {/* Ligne de connexion si des enfants existent */}
-      {hasChildren && !isCollapsed && (
-        <motion.div
-          className="w-0.5 bg-primary/40 my-2"
-          style={{ height: 30 }}
-          initial={{ scaleY: 0 }}
-          animate={{ scaleY: 1 }}
-          transition={{ duration: 0.3, delay: delay + 0.3 }}
-        />
-      )}
-
-      {/* Enfants */}
-      {hasChildren && (
-        <div className="relative">
-          {/* Ligne horizontale pour connecter les enfants */}
-          {!isCollapsed && member.children!.length > 1 && (
-            <motion.div
-              className="absolute h-0.5 bg-primary/30"
-              style={{
-                top: 0,
-                left: "50%",
-                transform: "translateX(-50%)",
-                width: `${Math.min(member.children!.length * 160, 800)}px`,
-              }}
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 0.4, delay: delay + 0.4 }}
-            />
+          {/* Horizontal line spanning direct reports */}
+          {department.reports.length > 1 && (
+            <div className="h-0.5 bg-border w-full max-w-[300px]" />
           )}
 
-          {/* Grid des enfants */}
-          <div
-            className={`flex ${
-              member.children!.length > 3 ? "flex-wrap" : ""
-            } justify-center gap-4 mt-4`}
-          >
-            {member.children!.map((child, idx) => (
-              <div
-                key={`${child.name}-${idx}`}
-                className="flex flex-col items-center"
-              >
-                {!isCollapsed && (
-                  <motion.div
-                    className="w-0.5 bg-primary/30"
-                    style={{ height: 20 }}
-                    initial={{ scaleY: 0 }}
-                    animate={{ scaleY: 1 }}
-                    transition={{
-                      duration: 0.2,
-                      delay: delay + 0.5 + idx * 0.1,
-                    }}
-                  />
+          {/* Direct Reports */}
+          <div className="flex flex-wrap justify-center gap-4 mt-4">
+            {department.reports.map((report, i) => (
+              <div key={report.name} className="flex flex-col items-center">
+                {/* Vertical connector from horizontal line for multiple reports */}
+                {department.reports.length > 1 && (
+                  <div className="w-0.5 h-4 bg-border" />
                 )}
-                <HierarchyNode
-                  member={child}
-                  delay={delay + 0.6 + idx * 0.2}
-                  isCollapsed={isCollapsed}
-                  depth={depth + 1}
-                />
+
+                {/* Direct Report Card */}
+                <div className="rounded-lg border-2 border-emerald-500 bg-emerald-500/5 shadow-md p-3 min-w-[140px] hover:scale-105 transition-transform">
+                  <div className="flex flex-col items-center text-center gap-2">
+                    <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-emerald-500 bg-gradient-to-br from-emerald-500 to-emerald-500/50 flex items-center justify-center">
+                      <Rocket size={16} className="text-foreground" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-foreground text-xs">
+                        {report.name}
+                      </p>
+                      <p className="text-muted-foreground text-[9px] font-medium">
+                        {report.title}
+                      </p>
+                      <p className="text-emerald-500 text-[8px] font-semibold">
+                        {report.department}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sub-reports if any */}
+                {report.reports && report.reports.length > 0 && (
+                  <>
+                    <div className="w-0.5 h-4 bg-border" />
+                    <div className="flex flex-col items-center gap-2">
+                      {report.reports.map((subReport, j) => (
+                        <div
+                          key={subReport.name}
+                          className="rounded border-2 border-blue-400 bg-blue-400/5 shadow-sm p-2 min-w-[120px] hover:scale-105 transition-transform"
+                        >
+                          <div className="flex flex-col items-center text-center gap-1">
+                            <div className="w-6 h-6 rounded-full overflow-hidden border border-blue-400 bg-gradient-to-br from-blue-400 to-blue-400/50 flex items-center justify-center">
+                              <Rocket size={10} className="text-foreground" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-foreground text-[10px]">
+                                {subReport.name}
+                              </p>
+                              <p className="text-muted-foreground text-[8px]">
+                                {subReport.title}
+                              </p>
+                              <p className="text-blue-400 text-[7px]">
+                                {subReport.department}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
             ))}
           </div>
-        </div>
+        </>
       )}
     </div>
   );
 }
 
 export default function SolarOrgChart() {
-  const containerRef = useRef(null);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Collecter tous les membres pour la vue compacte
-  const allMembers = flattenOrgStructure(orgStructure);
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoaded(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      setIsScrolled(container.scrollTop > 50);
+    };
+
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <section
-      className="relative h-full py-8 px-4 overflow-hidden"
-      ref={containerRef}
+    <div
+      ref={scrollRef}
+      className="h-full w-full flex flex-col overflow-y-auto pt-12"
     >
-      {/* Ambient background rockets */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(8)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute opacity-10"
-            style={{ left: `${5 + i * 12}%`, top: "100%" }}
-            animate={{ y: "-250vh" }}
-            transition={{
-              duration: 15 + i * 2,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-              delay: i * 3,
-            }}
-          >
-            <svg width="20" height="35" viewBox="0 0 60 90" fill="none">
-              <path
-                d="M30 0C30 0 10 20 10 45C10 62 18 72 18 72H42C42 72 50 62 50 45C50 20 30 0 30 0Z"
-                fill="#60a5fa"
-              />
-            </svg>
-          </motion.div>
-        ))}
-      </div>
-
-      <div
-        className={`max-w-7xl mx-auto relative z-10 h-full flex flex-col ${
-          isCollapsed ? "" : "overflow-y-auto"
-        }`}
-      >
-        {/* Header with collapse button */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-8 shrink-0"
+      <div className="max-w-7xl mx-auto w-full flex flex-col items-center px-2 mt-8">
+        {/* Header */}
+        <div
+          className={`flex items-center justify-center gap-2 py-4 mb-8 mt-4 w-full transition-all duration-300 ${
+            isLoaded ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
+          } ${
+            isScrolled
+              ? "opacity-0 -translate-y-8 scale-75 h-0 mb-0 mt-0 py-0 overflow-hidden pointer-events-none"
+              : "opacity-100 translate-y-0 scale-100"
+          }`}
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-3 text-foreground">
-            SpaceX <span className="text-primary">Organization</span>
-          </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto mb-4">
-            Découvrez la structure hiérarchique de SpaceX avec les départements
-            et services
-          </p>
-
-          <motion.button
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-card/80 border border-border rounded-lg text-sm text-foreground hover:bg-card hover:border-primary transition-colors"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            {isCollapsed ? (
-              <>
-                <Maximize2 className="w-4 h-4" />
-                Vue Détaillée
-              </>
-            ) : (
-              <>
-                <Minimize2 className="w-4 h-4" />
-                Vue Compacte
-              </>
-            )}
-          </motion.button>
-        </motion.div>
+          <Rocket size={20} className="text-foreground" />
+          <div className="text-center">
+            <h2 className="text-lg md:text-2xl font-black tracking-tight text-foreground">
+              SPACEX ORGANIZATION
+            </h2>
+            <p className="text-muted-foreground text-[10px] md:text-xs">
+              Structure Hiérarchique & Départements
+            </p>
+          </div>
+        </div>
 
         {/* Org Chart */}
-        <AnimatePresence mode="wait">
-          {isCollapsed ? (
-            <motion.div
-              key="collapsed"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.3 }}
-              className="flex-1 flex flex-col items-center justify-start gap-4 overflow-y-auto pb-8"
-            >
-              {/* Grille compacte de tous les membres */}
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-w-6xl">
-                {allMembers.map(({ member }, idx) => (
-                  <CompactOrgCard
-                    key={`${member.name}-${idx}`}
-                    member={member}
-                    delay={0}
-                    isCollapsed={true}
-                  />
-                ))}
-              </div>
+        <div className="flex flex-col items-center w-full gap-4 pb-8">
+          {/* Board of Directors */}
+          <BoardCard delay={100} isLoaded={isLoaded} />
 
-              {/* Legend */}
-              <div className="flex flex-wrap justify-center gap-6 mt-4">
-                {[
-                  { label: "CEO & Direction", color: "bg-accent" },
-                  { label: "Niveau Exécutif", color: "bg-primary" },
-                  { label: "Départements & Services", color: "bg-emerald-500" },
-                ].map((item) => (
-                  <div key={item.label} className="flex items-center gap-2">
-                    <div className={`w-3 h-3 rounded-full ${item.color}`} />
-                    <span className="text-xs text-muted-foreground">
-                      {item.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="expanded"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.3 }}
-              className="flex-1 overflow-y-auto pb-8"
-            >
-              <div className="flex flex-col items-center">
-                {/* Structure hiérarchique complète */}
-                <HierarchyNode
-                  member={orgStructure}
-                  delay={0.2}
-                  isCollapsed={false}
-                  depth={0}
-                />
+          {/* Connector */}
+          <div
+            className={`w-0.5 h-6 bg-border transition-all duration-300 ${
+              isLoaded ? "scale-y-100" : "scale-y-0"
+            }`}
+            style={{ transitionDelay: "200ms", transformOrigin: "top" }}
+          />
 
-                {/* Legend */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 2 }}
-                  className="flex flex-wrap justify-center gap-8 mt-16"
-                >
-                  {[
-                    { label: "CEO & Direction", color: "bg-accent" },
-                    { label: "Niveau Exécutif", color: "bg-primary" },
-                    {
-                      label: "Départements & Services",
-                      color: "bg-emerald-500",
-                    },
-                  ].map((item) => (
-                    <div key={item.label} className="flex items-center gap-3">
-                      <div className={`w-4 h-4 rounded-full ${item.color}`} />
-                      <span className="text-sm text-muted-foreground">
-                        {item.label}
-                      </span>
-                    </div>
-                  ))}
-                </motion.div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+          {/* CEO */}
+          <CEOCard delay={300} isLoaded={isLoaded} />
+
+          {/* Connector from CEO to departments */}
+          <div
+            className={`w-0.5 h-6 bg-border transition-all duration-300 ${
+              isLoaded ? "scale-y-100" : "scale-y-0"
+            }`}
+            style={{ transitionDelay: "400ms", transformOrigin: "top" }}
+          />
+
+          {/* Horizontal line spanning all departments */}
+          <div
+            className={`h-0.5 bg-border transition-all duration-500 ${
+              isLoaded ? "w-[95%] max-w-6xl" : "w-0"
+            }`}
+            style={{ transitionDelay: "450ms" }}
+          />
+
+          {/* Department Hierarchies */}
+          <div className="flex flex-wrap justify-center gap-8 lg:gap-12 w-full max-w-7xl">
+            {HIERARCHY.departments.map((department, i) => (
+              <DepartmentCard
+                key={department.head.name}
+                department={department}
+                delay={500 + i * 150}
+                isLoaded={isLoaded}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Legend */}
+        <div
+          className={`mt-8 pt-4 border-t border-border/50 flex flex-wrap justify-center gap-6 transition-all duration-700 ${
+            isLoaded ? "opacity-100" : "opacity-0"
+          }`}
+          style={{ transitionDelay: "1200ms" }}
+        >
+          {[
+            { label: "CEO & Direction", color: "bg-accent" },
+            { label: "Niveau Exécutif", color: "bg-primary" },
+            { label: "Départements", color: "bg-emerald-500" },
+            { label: "Sous-départements", color: "bg-blue-400" },
+          ].map((item) => (
+            <div key={item.label} className="flex items-center gap-2">
+              <div className={`w-3 h-3 rounded-full ${item.color}`} />
+              <span className="text-xs text-muted-foreground">
+                {item.label}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Footer */}
+        <div
+          className={`mt-4 pb-4 text-center transition-all duration-700 ${
+            isLoaded ? "opacity-100" : "opacity-0"
+          }`}
+          style={{ transitionDelay: "1200ms" }}
+        >
+          <p className="text-[10px] text-muted-foreground">
+            SpaceX • Structure Organisationnelle • Hawthorne, California •
+            Décembre 2025
+          </p>
+        </div>
       </div>
-    </section>
+    </div>
   );
 }
