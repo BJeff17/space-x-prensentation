@@ -190,7 +190,7 @@ function CompactOrgCard({ member, delay, isCollapsed }: { member: OrgMember; del
           className={`w-8 h-8 rounded-full bg-gradient-to-br ${departmentStyle.bg} to-slate-700 flex items-center justify-center`}
         >
           <span className="text-foreground font-bold text-xs">
-            {member.icon || member.name
+            {member.icon ? member.icon : member.name
               .split(" ")
               .map((n) => n[0])
               .join("")}
@@ -276,13 +276,13 @@ function CompactOrgCard({ member, delay, isCollapsed }: { member: OrgMember; del
 
           <div className="p-5 text-center">
             <motion.div
-              className={`w-16 h-16 mx-auto rounded-full bg-gradient-to-br ${departmentStyle.bg} to-slate-700 flex items-center justify-center mb-3 shadow-lg ring-2 ring-offset-2 ring-offset-card ring-${departmentStyle.text.replace('text-', '')}`}
+              className={`w-16 h-16 mx-auto rounded-full bg-gradient-to-br ${departmentStyle.bg} to-slate-700 flex items-center justify-center mb-3 shadow-lg ring-2 ring-offset-2 ring-offset-card ${departmentStyle.border}`}
               initial={{ scale: 0 }}
               animate={phase === "landed" ? { scale: 1 } : { scale: 0 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
             >
               <span className="text-2xl">
-                {member.icon || member.name
+                {member.icon ? member.icon : member.name
                   .split(" ")
                   .map((n) => n[0])
                   .join("")}
