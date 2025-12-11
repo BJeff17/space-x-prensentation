@@ -9,34 +9,215 @@ interface OrgMember {
   role: string
   level: number
   reports?: number
+  department?: string
+  children?: OrgMember[]
 }
 
-const ceo: OrgMember = {
+interface Department {
+  head: OrgMember
+  subdivisions?: Department[]
+}
+
+// Structure basée sur l'organigramme SpaceX réel
+const orgStructure: OrgMember = {
   name: "Elon Musk",
-  role: "Founder, CEO & CTO",
+  role: "CEO, CTO & Director",
   level: 0,
   reports: 301,
+  children: [
+    // Directeurs sous CEO
+    {
+      name: "Director",
+      role: "Director",
+      level: 1,
+      department: "Board",
+    },
+    {
+      name: "Director",
+      role: "Director",
+      level: 1,
+      department: "Board",
+    },
+    {
+      name: "Director",
+      role: "Director",
+      level: 1,
+      department: "Board",
+    },
+    {
+      name: "Director",
+      role: "Director",
+      level: 1,
+      department: "Board",
+    },
+    // CFO & Strategic Acquisitions Branch
+    {
+      name: "Bret Johnsen",
+      role: "CFO & Strategic Acquisitions",
+      level: 1,
+      reports: 28,
+      department: "Finance",
+      children: [
+        {
+          name: "Accounting Dept",
+          role: "Accounting",
+          level: 2,
+          department: "Accounting",
+        },
+        {
+          name: "Finance Dept",
+          role: "Finance",
+          level: 2,
+          department: "Finance",
+        },
+        {
+          name: "IT Dept",
+          role: "IT",
+          level: 2,
+          department: "IT",
+        },
+      ],
+    },
+    // President, COO & Director Branch
+    {
+      name: "Gwynne Shotwell",
+      role: "President, COO & Director",
+      level: 1,
+      reports: 70,
+      department: "Operations",
+      children: [
+        {
+          name: "Assistant to President",
+          role: "Assistant to President & COO",
+          level: 2,
+          department: "Operations",
+        },
+        {
+          name: "Early Careers",
+          role: "Early Careers & Programming",
+          level: 2,
+          department: "HR",
+        },
+        {
+          name: "Starlink Production",
+          role: "Starlink Production Engineering",
+          level: 2,
+          department: "Starlink",
+        },
+        {
+          name: "Mission Management",
+          role: "Mission Management",
+          level: 2,
+          department: "Operations",
+        },
+        {
+          name: "Build & Flight",
+          role: "Build & Flight Reliability",
+          level: 2,
+          department: "Operations",
+        },
+        {
+          name: "Customer Operations",
+          role: "Customer Operations & Integration",
+          level: 2,
+          department: "Operations",
+        },
+        {
+          name: "Commercial Sales",
+          role: "Commercial Sales",
+          level: 2,
+          department: "Sales",
+          children: [
+            {
+              name: "Communications",
+              role: "Communications",
+              level: 3,
+              department: "Sales",
+            },
+          ],
+        },
+        {
+          name: "HR",
+          role: "HR",
+          level: 2,
+          department: "HR",
+        },
+        {
+          name: "Launch",
+          role: "Launch",
+          level: 2,
+          department: "Launch",
+          children: [
+            {
+              name: "Texas Test & Launch",
+              role: "Texas Test & Launch",
+              level: 3,
+              department: "Launch",
+            },
+          ],
+        },
+        {
+          name: "Legal",
+          role: "Legal",
+          level: 2,
+          department: "Legal",
+          children: [
+            {
+              name: "Acting Legal",
+              role: "Acting Legal",
+              level: 3,
+              department: "Legal",
+            },
+            {
+              name: "Satellite Policy",
+              role: "Satellite Policy",
+              level: 3,
+              department: "Legal",
+            },
+            {
+              name: "Satellite Policy",
+              role: "Satellite Policy",
+              level: 3,
+              department: "Legal",
+            },
+          ],
+        },
+        {
+          name: "Materials Engineering",
+          role: "Materials Engineering",
+          level: 2,
+          department: "Engineering",
+        },
+        {
+          name: "Private Astronaut",
+          role: "Private Astronaut Recruitment",
+          level: 2,
+          department: "Operations",
+        },
+        {
+          name: "Vehicle Engineering",
+          role: "Vehicle Engineering",
+          level: 2,
+          department: "Engineering",
+          children: [
+            {
+              name: "Starship Engineering",
+              role: "Starship Engineering",
+              level: 3,
+              department: "Engineering",
+            },
+            {
+              name: "Application Software",
+              role: "Application Software",
+              level: 3,
+              department: "Engineering",
+            },
+          ],
+        },
+      ],
+    },
+  ],
 }
-
-const executives: OrgMember[] = [
-  { name: "Gwynne Shotwell", role: "President & COO", level: 1, reports: 70 },
-  { name: "Bret Johnsen", role: "CFO & President, Strategic Acquisitions", level: 1, reports: 28 },
-  { name: "Mark Juncosa", role: "VP, Vehicle Engineering", level: 1, reports: 52 },
-  { name: "Charles Kuehmann", role: "VP, Materials Engineering", level: 1, reports: 35 },
-]
-
-const engineers: OrgMember[] = [
-  { name: "Joe Petrzelka", role: "VP, Spacecraft Engineering", level: 2, reports: 60 },
-  { name: "Jonathan Greenhill", role: "Chief Government Officer", level: 2 },
-  { name: "Jason Fritch", role: "VP, WW Enterprise Sales", level: 2, reports: 2 },
-  { name: "Jessica Jensen", role: "VP, Customer Operations", level: 2, reports: 10 },
-  { name: "Alexander Wojcicki", role: "Principal Propulsion Engineer", level: 2, reports: 11 },
-  { name: "Craig Remillard", role: "Principal Engineer", level: 2, reports: 14 },
-  { name: "Ali Sajjadi", role: "Principal RF Engineer", level: 2 },
-  { name: "Anthony Geoffron", role: "Principal System Engineer", level: 2 },
-  { name: "Andy Borrell", role: "Senior Software Engineer", level: 2 },
-  { name: "Michael Zou", role: "Senior Software Engineer", level: 2 },
-]
 
 // Enhanced detailed rocket with particle effects
 function DetailedRocket({ size = 60 }: { size?: number }) {
@@ -161,9 +342,10 @@ function CompactOrgCard({ member, delay, isCollapsed }: { member: OrgMember; del
     0: { border: "border-accent", bg: "from-accent", color: "accent" },
     1: { border: "border-primary", bg: "from-primary", color: "primary" },
     2: { border: "border-emerald-500", bg: "from-emerald-500", color: "emerald-500" },
+    3: { border: "border-blue-400", bg: "from-blue-400", color: "blue-400" },
   }
 
-  const style = levelStyles[member.level as keyof typeof levelStyles]
+  const style = levelStyles[member.level as keyof typeof levelStyles] || levelStyles[2]
 
   // Collapsed compact view
   if (isCollapsed) {
@@ -305,23 +487,103 @@ function CompactOrgCard({ member, delay, isCollapsed }: { member: OrgMember; del
   )
 }
 
-// Animated connection line
-function ConnectionLine({ delay, height = 40, isCollapsed }: { delay: number; height?: number; isCollapsed: boolean }) {
-  if (isCollapsed) return null
+// Fonction récursive pour collecter tous les membres de l'organigramme
+function flattenOrgStructure(member: OrgMember, path: string[] = []): Array<{ member: OrgMember; path: string[] }> {
+  const currentPath = [...path, member.name]
+  const result: Array<{ member: OrgMember; path: string[] }> = [{ member, path: currentPath }]
+  
+  if (member.children) {
+    member.children.forEach(child => {
+      result.push(...flattenOrgStructure(child, currentPath))
+    })
+  }
+  
+  return result
+}
+
+// Composant pour afficher un nœud hiérarchique avec ses enfants
+function HierarchyNode({ 
+  member, 
+  delay, 
+  isCollapsed, 
+  depth = 0 
+}: { 
+  member: OrgMember
+  delay: number
+  isCollapsed: boolean
+  depth?: number
+}) {
+  const hasChildren = member.children && member.children.length > 0
+  
   return (
-    <motion.div
-      className="w-0.5 bg-gradient-to-b from-primary via-primary/50 to-transparent mx-auto"
-      style={{ height }}
-      initial={{ scaleY: 0, opacity: 0 }}
-      animate={{ scaleY: 1, opacity: 1 }}
-      transition={{ duration: 0.5, delay }}
-    />
+    <div className="flex flex-col items-center">
+      {/* Le nœud lui-même */}
+      <CompactOrgCard member={member} delay={delay} isCollapsed={isCollapsed} />
+      
+      {/* Ligne de connexion si des enfants existent */}
+      {hasChildren && !isCollapsed && (
+        <motion.div
+          className="w-0.5 bg-primary/40 my-2"
+          style={{ height: 30 }}
+          initial={{ scaleY: 0 }}
+          animate={{ scaleY: 1 }}
+          transition={{ duration: 0.3, delay: delay + 0.3 }}
+        />
+      )}
+      
+      {/* Enfants */}
+      {hasChildren && (
+        <div className="relative">
+          {/* Ligne horizontale pour connecter les enfants */}
+          {!isCollapsed && member.children!.length > 1 && (
+            <motion.div
+              className="absolute h-0.5 bg-primary/30"
+              style={{ 
+                top: 0,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: `${Math.min(member.children!.length * 160, 800)}px`
+              }}
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.4, delay: delay + 0.4 }}
+            />
+          )}
+          
+          {/* Grid des enfants */}
+          <div className={`flex ${member.children!.length > 3 ? 'flex-wrap' : ''} justify-center gap-4 mt-4`}>
+            {member.children!.map((child, idx) => (
+              <div key={`${child.name}-${idx}`} className="flex flex-col items-center">
+                {!isCollapsed && (
+                  <motion.div
+                    className="w-0.5 bg-primary/30"
+                    style={{ height: 20 }}
+                    initial={{ scaleY: 0 }}
+                    animate={{ scaleY: 1 }}
+                    transition={{ duration: 0.2, delay: delay + 0.5 + idx * 0.1 }}
+                  />
+                )}
+                <HierarchyNode 
+                  member={child} 
+                  delay={delay + 0.6 + idx * 0.2} 
+                  isCollapsed={isCollapsed}
+                  depth={depth + 1}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   )
 }
 
 export default function SolarOrgChart() {
   const containerRef = useRef(null)
   const [isCollapsed, setIsCollapsed] = useState(false)
+  
+  // Collecter tous les membres pour la vue compacte
+  const allMembers = flattenOrgStructure(orgStructure)
 
   return (
     <section className="relative h-full py-8 px-4 overflow-hidden" ref={containerRef}>
@@ -348,13 +610,13 @@ export default function SolarOrgChart() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-8 flex-shrink-0"
+          className="text-center mb-8 shrink-0"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-3 text-foreground">
             SpaceX <span className="text-primary">Organization</span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto mb-4">
-            Discover the hierarchical structure of SpaceX, delivered by our fastest rockets
+            Découvrez la structure hiérarchique de SpaceX avec les départements et services
           </p>
 
           <motion.button
@@ -366,12 +628,12 @@ export default function SolarOrgChart() {
             {isCollapsed ? (
               <>
                 <Maximize2 className="w-4 h-4" />
-                Expand View
+                Vue Détaillée
               </>
             ) : (
               <>
                 <Minimize2 className="w-4 h-4" />
-                Compact View
+                Vue Compacte
               </>
             )}
           </motion.button>
@@ -386,33 +648,26 @@ export default function SolarOrgChart() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3 }}
-              className="flex-1 flex flex-col items-center justify-center gap-6"
+              className="flex-1 flex flex-col items-center justify-start gap-4 overflow-y-auto pb-8"
             >
-              {/* CEO */}
-              <div>
-                <CompactOrgCard member={ceo} delay={0} isCollapsed={true} />
-              </div>
-
-              {/* Executives row */}
-              <div className="flex flex-wrap justify-center gap-3">
-                {executives.map((exec) => (
-                  <CompactOrgCard key={exec.name} member={exec} delay={0} isCollapsed={true} />
-                ))}
-              </div>
-
-              {/* Engineers grid */}
-              <div className="flex flex-wrap justify-center gap-2 max-w-4xl">
-                {engineers.map((eng) => (
-                  <CompactOrgCard key={eng.name} member={eng} delay={0} isCollapsed={true} />
+              {/* Grille compacte de tous les membres */}
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-w-6xl">
+                {allMembers.map(({ member }, idx) => (
+                  <CompactOrgCard 
+                    key={`${member.name}-${idx}`} 
+                    member={member} 
+                    delay={0} 
+                    isCollapsed={true} 
+                  />
                 ))}
               </div>
 
               {/* Legend */}
               <div className="flex flex-wrap justify-center gap-6 mt-4">
                 {[
-                  { label: "CEO & Founder", color: "bg-accent" },
-                  { label: "Executive Leadership", color: "bg-primary" },
-                  { label: "VPs & Senior Engineers", color: "bg-emerald-500" },
+                  { label: "CEO & Direction", color: "bg-accent" },
+                  { label: "Niveau Exécutif", color: "bg-primary" },
+                  { label: "Départements & Services", color: "bg-emerald-500" },
                 ].map((item) => (
                   <div key={item.label} className="flex items-center gap-2">
                     <div className={`w-3 h-3 rounded-full ${item.color}`} />
@@ -431,60 +686,25 @@ export default function SolarOrgChart() {
               className="flex-1 overflow-y-auto pb-8"
             >
               <div className="flex flex-col items-center">
-                {/* CEO Level */}
-                <CompactOrgCard member={ceo} delay={0.2} isCollapsed={false} />
-                <ConnectionLine delay={1.8} height={50} isCollapsed={false} />
-
-                {/* Executive Level */}
-                <motion.div
-                  className="w-full max-w-4xl"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 2 }}
-                >
-                  <div className="h-0.5 bg-gradient-to-r from-transparent via-primary/40 to-transparent mb-4" />
-                  <div className="flex flex-wrap justify-center gap-6">
-                    {executives.map((exec, idx) => (
-                      <div key={exec.name} className="flex flex-col items-center">
-                        <div className="w-0.5 h-4 bg-primary/40" />
-                        <CompactOrgCard member={exec} delay={2.2 + idx * 0.3} isCollapsed={false} />
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-
-                {/* Connection to engineers */}
-                <ConnectionLine delay={4} height={40} isCollapsed={false} />
-
-                {/* Engineers Level */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 4.2 }}
-                  className="w-full"
-                >
-                  <div className="h-0.5 bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent mb-4" />
-                  <div className="flex flex-wrap justify-center gap-4">
-                    {engineers.map((eng, idx) => (
-                      <div key={eng.name} className="flex flex-col items-center">
-                        <div className="w-0.5 h-3 bg-emerald-500/30" />
-                        <CompactOrgCard member={eng} delay={4.4 + idx * 0.15} isCollapsed={false} />
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
+                {/* Structure hiérarchique complète */}
+                <HierarchyNode 
+                  member={orgStructure} 
+                  delay={0.2} 
+                  isCollapsed={false}
+                  depth={0}
+                />
 
                 {/* Legend */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 7 }}
+                  transition={{ duration: 0.8, delay: 2 }}
                   className="flex flex-wrap justify-center gap-8 mt-16"
                 >
                   {[
-                    { label: "CEO & Founder", color: "bg-accent" },
-                    { label: "Executive Leadership", color: "bg-primary" },
-                    { label: "VPs & Senior Engineers", color: "bg-emerald-500" },
+                    { label: "CEO & Direction", color: "bg-accent" },
+                    { label: "Niveau Exécutif", color: "bg-primary" },
+                    { label: "Départements & Services", color: "bg-emerald-500" },
                   ].map((item) => (
                     <div key={item.label} className="flex items-center gap-3">
                       <div className={`w-4 h-4 rounded-full ${item.color}`} />
