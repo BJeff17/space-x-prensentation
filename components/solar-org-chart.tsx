@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { useRef, useState, useEffect } from "react"
 import { Users, Minimize2, Maximize2, ChevronDown, ChevronRight, Rocket, DollarSign, Cog, Building2, Scale, UserCircle } from "lucide-react"
+import { clsx } from "clsx"
 
 interface OrgMember {
   id: string
@@ -50,6 +51,14 @@ const departmentColors = {
 // Helper function to get children of a member
 function getChildren(parentId: string): OrgMember[] {
   return orgData.filter(member => member.reportsTo === parentId)
+}
+
+// Helper function to get display icon or initials
+function getDisplayIcon(member: OrgMember): string {
+  return member.icon || member.name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
 }
 
 // Enhanced detailed rocket with particle effects
@@ -190,10 +199,7 @@ function CompactOrgCard({ member, delay, isCollapsed }: { member: OrgMember; del
           className={`w-8 h-8 rounded-full bg-gradient-to-br ${departmentStyle.bg} to-slate-700 flex items-center justify-center`}
         >
           <span className="text-foreground font-bold text-xs">
-            {member.icon ? member.icon : member.name
-              .split(" ")
-              .map((n) => n[0])
-              .join("")}
+            {getDisplayIcon(member)}
           </span>
         </div>
         <div className="text-left">
@@ -276,16 +282,18 @@ function CompactOrgCard({ member, delay, isCollapsed }: { member: OrgMember; del
 
           <div className="p-5 text-center">
             <motion.div
-              className={`w-16 h-16 mx-auto rounded-full bg-gradient-to-br ${departmentStyle.bg} to-slate-700 flex items-center justify-center mb-3 shadow-lg ring-2 ring-offset-2 ring-offset-card ${departmentStyle.border}`}
+              className={clsx(
+                "w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-3 shadow-lg",
+                "ring-2 ring-offset-2 ring-offset-card",
+                `bg-gradient-to-br ${departmentStyle.bg} to-slate-700`,
+                departmentStyle.border
+              )}
               initial={{ scale: 0 }}
               animate={phase === "landed" ? { scale: 1 } : { scale: 0 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
             >
               <span className="text-2xl">
-                {member.icon ? member.icon : member.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
+                {getDisplayIcon(member)}
               </span>
             </motion.div>
 
