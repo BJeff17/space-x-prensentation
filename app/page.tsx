@@ -54,11 +54,11 @@ export default function Home() {
       } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
         goToSection("up")
       } else if (e.key === "Escape" && isFullscreen) {
-        // Escape est géré automatiquement par le navigateur pour sortir du fullscreen
-        // mais on met à jour notre état
+        // Escape is handled automatically by the browser to exit fullscreen
+        // but we update our state
         setIsFullscreen(false)
       } else if (e.key === "f" || e.key === "F") {
-        // Touche F pour toggle fullscreen
+        // F key to toggle fullscreen
         toggleFullscreen()
       }
     }
@@ -67,7 +67,7 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [goToSection, isFullscreen, toggleFullscreen])
 
-  // Écouter les changements de fullscreen (quand l'utilisateur appuie sur Escape)
+  // Listen for fullscreen changes (when user presses Escape)
   useEffect(() => {
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement)
@@ -77,9 +77,33 @@ export default function Home() {
     return () => document.removeEventListener("fullscreenchange", handleFullscreenChange)
   }, [])
 
-  // Mouse wheel navigation
+  // Mouse wheel navigation with orgchart scroll detection
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
+      // Check if we're on the orgchart section (index 2)
+      if (currentSection === 2) {
+        const orgChartContainer = document.getElementById('org-chart-container')
+        
+        if (orgChartContainer) {
+          const { scrollTop, scrollHeight, clientHeight } = orgChartContainer
+          const isAtTop = scrollTop === 0
+          const isAtBottom = Math.abs(scrollHeight - clientHeight - scrollTop) < 1
+          
+          // Only navigate to other slides if at the edges of the scroll
+          if ((e.deltaY < 0 && isAtTop) || (e.deltaY > 0 && isAtBottom)) {
+            e.preventDefault()
+            if (e.deltaY > 0) {
+              goToSection("down")
+            } else {
+              goToSection("up")
+            }
+          }
+          // Otherwise, let the orgchart scroll naturally
+          return
+        }
+      }
+      
+      // For other sections, normal slide navigation
       e.preventDefault()
       if (e.deltaY > 0) {
         goToSection("down")
@@ -90,7 +114,7 @@ export default function Home() {
 
     window.addEventListener("wheel", handleWheel, { passive: false })
     return () => window.removeEventListener("wheel", handleWheel)
-  }, [goToSection])
+  }, [goToSection, currentSection])
 
   return (
     <main className="relative h-screen w-screen bg-background overflow-hidden">
