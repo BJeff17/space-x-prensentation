@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion"
 import { useRef, useState, useEffect } from "react"
-import { Users, Minimize2, Maximize2, ChevronDown, ChevronRight, Rocket, DollarSign, Cog, Building2, Scale, UserCircle } from "lucide-react"
+import { Users, Minimize2, Maximize2, ChevronDown, ChevronRight } from "lucide-react"
 import { clsx } from "clsx"
 
 interface OrgMember {
@@ -60,6 +60,15 @@ function getDisplayIcon(member: OrgMember): string {
     .map((n) => n[0])
     .join("")
 }
+
+// Legend items for department categories
+const DEPARTMENT_LEGEND = [
+  { label: "Executive", color: "bg-orange-500", icon: "🚀" },
+  { label: "Operations", color: "bg-blue-500", icon: "⚙️" },
+  { label: "Finance", color: "bg-green-500", icon: "💰" },
+  { label: "Engineering", color: "bg-purple-500", icon: "🔧" },
+  { label: "Legal", color: "bg-amber-500", icon: "⚖️" },
+]
 
 // Enhanced detailed rocket with particle effects
 function DetailedRocket({ size = 60 }: { size?: number }) {
@@ -474,13 +483,7 @@ export default function SolarOrgChart() {
 
               {/* Legend */}
               <div className="flex flex-wrap justify-center gap-6 mt-4">
-                {[
-                  { label: "Executive", color: "bg-orange-500", icon: "🚀" },
-                  { label: "Operations", color: "bg-blue-500", icon: "⚙️" },
-                  { label: "Finance", color: "bg-green-500", icon: "💰" },
-                  { label: "Engineering", color: "bg-purple-500", icon: "🔧" },
-                  { label: "Legal", color: "bg-amber-500", icon: "⚖️" },
-                ].map((item) => (
+                {DEPARTMENT_LEGEND.map((item) => (
                   <div key={item.label} className="flex items-center gap-2">
                     <div className={`w-3 h-3 rounded-full ${item.color}`} />
                     <span className="text-xs">{item.icon}</span>
@@ -509,13 +512,7 @@ export default function SolarOrgChart() {
                   transition={{ duration: 0.8, delay: 5 }}
                   className="flex flex-wrap justify-center gap-6 mt-16"
                 >
-                  {[
-                    { label: "Executive", color: "bg-orange-500", icon: "🚀" },
-                    { label: "Operations", color: "bg-blue-500", icon: "⚙️" },
-                    { label: "Finance", color: "bg-green-500", icon: "💰" },
-                    { label: "Engineering", color: "bg-purple-500", icon: "🔧" },
-                    { label: "Legal", color: "bg-amber-500", icon: "⚖️" },
-                  ].map((item) => (
+                  {DEPARTMENT_LEGEND.map((item) => (
                     <div key={item.label} className="flex items-center gap-3">
                       <div className={`w-4 h-4 rounded-full ${item.color}`} />
                       <span className="text-lg">{item.icon}</span>
