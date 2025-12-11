@@ -57,6 +57,7 @@ function getChildren(parentId: string): OrgMember[] {
 function getDisplayIcon(member: OrgMember): string {
   return member.icon || member.name
     .split(" ")
+    .filter(n => n.length > 0)
     .map((n) => n[0])
     .join("")
 }
@@ -67,6 +68,7 @@ const DEPARTMENT_LEGEND = [
   { label: "Operations", color: "bg-blue-500", icon: "⚙️" },
   { label: "Finance", color: "bg-green-500", icon: "💰" },
   { label: "Engineering", color: "bg-purple-500", icon: "🔧" },
+  { label: "Production", color: "bg-cyan-500", icon: "🏭" },
   { label: "Legal", color: "bg-amber-500", icon: "⚖️" },
 ]
 

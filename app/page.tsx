@@ -54,11 +54,11 @@ export default function Home() {
       } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
         goToSection("up")
       } else if (e.key === "Escape" && isFullscreen) {
-        // Escape est géré automatiquement par le navigateur pour sortir du fullscreen
-        // mais on met à jour notre état
+        // Escape is handled automatically by the browser to exit fullscreen
+        // but we update our state
         setIsFullscreen(false)
       } else if (e.key === "f" || e.key === "F") {
-        // Touche F pour toggle fullscreen
+        // F key to toggle fullscreen
         toggleFullscreen()
       }
     }
@@ -67,7 +67,7 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [goToSection, isFullscreen, toggleFullscreen])
 
-  // Écouter les changements de fullscreen (quand l'utilisateur appuie sur Escape)
+  // Listen for fullscreen changes (when user presses Escape)
   useEffect(() => {
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement)
