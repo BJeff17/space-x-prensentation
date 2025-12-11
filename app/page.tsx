@@ -77,9 +77,33 @@ export default function Home() {
     return () => document.removeEventListener("fullscreenchange", handleFullscreenChange)
   }, [])
 
-  // Mouse wheel navigation
+  // Mouse wheel navigation with orgchart scroll detection
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
+      // Check if we're on the orgchart section (index 2)
+      if (currentSection === 2) {
+        const orgChartContainer = document.getElementById('org-chart-container')
+        
+        if (orgChartContainer) {
+          const { scrollTop, scrollHeight, clientHeight } = orgChartContainer
+          const isAtTop = scrollTop === 0
+          const isAtBottom = Math.abs(scrollHeight - clientHeight - scrollTop) < 1
+          
+          // Only navigate to other slides if at the edges of the scroll
+          if ((e.deltaY < 0 && isAtTop) || (e.deltaY > 0 && isAtBottom)) {
+            e.preventDefault()
+            if (e.deltaY > 0) {
+              goToSection("down")
+            } else {
+              goToSection("up")
+            }
+          }
+          // Otherwise, let the orgchart scroll naturally
+          return
+        }
+      }
+      
+      // For other sections, normal slide navigation
       e.preventDefault()
       if (e.deltaY > 0) {
         goToSection("down")
@@ -90,7 +114,7 @@ export default function Home() {
 
     window.addEventListener("wheel", handleWheel, { passive: false })
     return () => window.removeEventListener("wheel", handleWheel)
-  }, [goToSection])
+  }, [goToSection, currentSection])
 
   return (
     <main className="relative h-screen w-screen bg-background overflow-hidden">
