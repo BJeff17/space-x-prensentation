@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import { motion, AnimatePresence } from "framer-motion"
-import { useRef, useState, useEffect } from "react"
-import { Users, Minimize2, Maximize2 } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
+import { Users, Minimize2, Maximize2 } from "lucide-react";
 
 interface OrgMember {
-  name: string
-  role: string
-  level: number
-  reports?: number
-  department?: string
-  children?: OrgMember[]
+  name: string;
+  role: string;
+  level: number;
+  reports?: number;
+  department?: string;
+  children?: OrgMember[];
 }
 
 interface Department {
-  head: OrgMember
-  subdivisions?: Department[]
+  head: OrgMember;
+  subdivisions?: Department[];
 }
 
 // Structure basée sur l'organigramme SpaceX réel
@@ -217,7 +217,7 @@ const orgStructure: OrgMember = {
       ],
     },
   ],
-}
+};
 
 // Enhanced detailed rocket with particle effects
 function DetailedRocket({ size = 60 }: { size?: number }) {
@@ -229,7 +229,15 @@ function DetailedRocket({ size = 60 }: { size?: number }) {
         stroke="#94a3b8"
         strokeWidth="1"
       />
-      <ellipse cx="30" cy="32" rx="9" ry="11" fill="#0c1929" stroke="#38bdf8" strokeWidth="2" />
+      <ellipse
+        cx="30"
+        cy="32"
+        rx="9"
+        ry="11"
+        fill="#0c1929"
+        stroke="#38bdf8"
+        strokeWidth="2"
+      />
       <ellipse cx="30" cy="30" rx="5" ry="6" fill="#0ea5e9" opacity="0.4" />
       <ellipse cx="28" cy="28" rx="2" ry="2" fill="#bae6fd" opacity="0.8" />
       <path d="M10 45L-3 70L10 62V45Z" fill="#b91c1c" />
@@ -257,23 +265,34 @@ function DetailedRocket({ size = 60 }: { size?: number }) {
             x: [(i - 2.5) * 3, (i - 2.5) * 8],
             opacity: [1, 0],
           }}
-          transition={{ duration: 0.5, repeat: Number.POSITIVE_INFINITY, delay: i * 0.08 }}
+          transition={{
+            duration: 0.5,
+            repeat: Number.POSITIVE_INFINITY,
+            delay: i * 0.08,
+          }}
         />
       ))}
       <defs>
-        <linearGradient id="detailedBody" x1="30" y1="0" x2="30" y2="72" gradientUnits="userSpaceOnUse">
+        <linearGradient
+          id="detailedBody"
+          x1="30"
+          y1="0"
+          x2="30"
+          y2="72"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop stopColor="#ffffff" />
           <stop offset="0.5" stopColor="#f1f5f9" />
           <stop offset="1" stopColor="#cbd5e1" />
         </linearGradient>
       </defs>
     </svg>
-  )
+  );
 }
 
 // Impressive smoke/landing effect
 function LandingEffect({ isActive }: { isActive: boolean }) {
-  if (!isActive) return null
+  if (!isActive) return null;
 
   return (
     <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 pointer-events-none">
@@ -282,7 +301,9 @@ function LandingEffect({ isActive }: { isActive: boolean }) {
           key={i}
           className="absolute rounded-full"
           style={{
-            background: `radial-gradient(circle, rgba(148,163,184,${0.6 - i * 0.04}) 0%, transparent 70%)`,
+            background: `radial-gradient(circle, rgba(148,163,184,${
+              0.6 - i * 0.04
+            }) 0%, transparent 70%)`,
             width: 20 + i * 4,
             height: 20 + i * 4,
           }}
@@ -312,40 +333,53 @@ function LandingEffect({ isActive }: { isActive: boolean }) {
         transition={{ duration: 0.3, repeat: Number.POSITIVE_INFINITY }}
       />
     </div>
-  )
+  );
 }
 
-function CompactOrgCard({ member, delay, isCollapsed }: { member: OrgMember; delay: number; isCollapsed: boolean }) {
-  const [phase, setPhase] = useState<"flying" | "landing" | "landed">("flying")
-  const [hasAnimated, setHasAnimated] = useState(false)
+function CompactOrgCard({
+  member,
+  delay,
+  isCollapsed,
+}: {
+  member: OrgMember;
+  delay: number;
+  isCollapsed: boolean;
+}) {
+  const [phase, setPhase] = useState<"flying" | "landing" | "landed">("flying");
+  const [hasAnimated, setHasAnimated] = useState(false);
 
   useEffect(() => {
     if (hasAnimated) {
-      setPhase("landed")
-      return
+      setPhase("landed");
+      return;
     }
-    const landingTimer = setTimeout(() => setPhase("landing"), delay * 1000 + 800)
-    const landedTimer = setTimeout(
-      () => {
-        setPhase("landed")
-        setHasAnimated(true)
-      },
-      delay * 1000 + 1500,
-    )
+    const landingTimer = setTimeout(
+      () => setPhase("landing"),
+      delay * 1000 + 800
+    );
+    const landedTimer = setTimeout(() => {
+      setPhase("landed");
+      setHasAnimated(true);
+    }, delay * 1000 + 1500);
     return () => {
-      clearTimeout(landingTimer)
-      clearTimeout(landedTimer)
-    }
-  }, [delay, hasAnimated])
+      clearTimeout(landingTimer);
+      clearTimeout(landedTimer);
+    };
+  }, [delay, hasAnimated]);
 
   const levelStyles = {
     0: { border: "border-accent", bg: "from-accent", color: "accent" },
     1: { border: "border-primary", bg: "from-primary", color: "primary" },
-    2: { border: "border-emerald-500", bg: "from-emerald-500", color: "emerald-500" },
+    2: {
+      border: "border-emerald-500",
+      bg: "from-emerald-500",
+      color: "emerald-500",
+    },
     3: { border: "border-blue-400", bg: "from-blue-400", color: "blue-400" },
-  }
+  };
 
-  const style = levelStyles[member.level as keyof typeof levelStyles] || levelStyles[2]
+  const style =
+    levelStyles[member.level as keyof typeof levelStyles] || levelStyles[2];
 
   // Collapsed compact view
   if (isCollapsed) {
@@ -368,15 +402,20 @@ function CompactOrgCard({ member, delay, isCollapsed }: { member: OrgMember; del
           </span>
         </div>
         <div className="text-left">
-          <p className="text-xs font-semibold text-foreground truncate max-w-[120px]">{member.name}</p>
-          <p className="text-[10px] text-muted-foreground truncate max-w-[120px]">{member.role.split(",")[0]}</p>
+          <p className="text-xs font-semibold text-foreground truncate max-w-[120px]">
+            {member.name}
+          </p>
+          <p className="text-[10px] text-muted-foreground truncate max-w-[120px]">
+            {member.role.split(",")[0]}
+          </p>
         </div>
       </motion.div>
-    )
+    );
   }
 
   // Full expanded view with rocket animation
-  const sizeClass = member.level === 0 ? "w-72" : member.level === 1 ? "w-56" : "w-48"
+  const sizeClass =
+    member.level === 0 ? "w-72" : member.level === 1 ? "w-56" : "w-48";
 
   return (
     <div className={`relative ${sizeClass}`}>
@@ -392,7 +431,9 @@ function CompactOrgCard({ member, delay, isCollapsed }: { member: OrgMember; del
             rotate: { duration: 0.5, delay: delay + 0.3, repeat: 2 },
           }}
         >
-          <DetailedRocket size={member.level === 0 ? 55 : member.level === 1 ? 45 : 35} />
+          <DetailedRocket
+            size={member.level === 0 ? 55 : member.level === 1 ? 45 : 35}
+          />
         </motion.div>
       )}
 
@@ -405,7 +446,9 @@ function CompactOrgCard({ member, delay, isCollapsed }: { member: OrgMember; del
             animate={{ y: -15, scale: [1, 0.95, 1] }}
             transition={{ duration: 0.4 }}
           >
-            <DetailedRocket size={member.level === 0 ? 55 : member.level === 1 ? 45 : 35} />
+            <DetailedRocket
+              size={member.level === 0 ? 55 : member.level === 1 ? 45 : 35}
+            />
           </motion.div>
           <LandingEffect isActive={true} />
         </>
@@ -420,7 +463,10 @@ function CompactOrgCard({ member, delay, isCollapsed }: { member: OrgMember; del
           transition={{ duration: 0.3 }}
         >
           <svg width="30" height="40" viewBox="0 0 60 90" fill="none">
-            <path d="M30 0C30 0 10 20 10 45C10 62 18 72 18 72H42C42 72 50 62 50 45C50 20 30 0 30 0Z" fill="#e2e8f0" />
+            <path
+              d="M30 0C30 0 10 20 10 45C10 62 18 72 18 72H42C42 72 50 62 50 45C50 20 30 0 30 0Z"
+              fill="#e2e8f0"
+            />
             <ellipse cx="30" cy="32" rx="9" ry="11" fill="#0c1929" />
             <path d="M10 45L-3 70L10 62V45Z" fill="#b91c1c" />
             <path d="M50 45L63 70L50 62V45Z" fill="#b91c1c" />
@@ -432,7 +478,11 @@ function CompactOrgCard({ member, delay, isCollapsed }: { member: OrgMember; del
       <motion.div
         className={`relative bg-card/95 border-2 ${style.border} rounded-xl overflow-hidden shadow-2xl backdrop-blur-sm`}
         initial={{ opacity: 0, scale: 0.7, y: 40 }}
-        animate={phase === "landed" ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.7, y: 40 }}
+        animate={
+          phase === "landed"
+            ? { opacity: 1, scale: 1, y: 0 }
+            : { opacity: 0, scale: 0.7, y: 40 }
+        }
         transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
       >
         <div className={`h-1.5 bg-gradient-to-r ${style.bg} to-transparent`} />
@@ -478,48 +528,55 @@ function CompactOrgCard({ member, delay, isCollapsed }: { member: OrgMember; del
               transition={{ delay: 0.5 }}
             >
               <Users className="w-3 h-3" />
-              <span className="text-xs font-medium">{member.reports} reports</span>
+              <span className="text-xs font-medium">
+                {member.reports} reports
+              </span>
             </motion.div>
           )}
         </div>
       </motion.div>
     </div>
-  )
+  );
 }
 
 // Fonction récursive pour collecter tous les membres de l'organigramme
-function flattenOrgStructure(member: OrgMember, path: string[] = []): Array<{ member: OrgMember; path: string[] }> {
-  const currentPath = [...path, member.name]
-  const result: Array<{ member: OrgMember; path: string[] }> = [{ member, path: currentPath }]
-  
+function flattenOrgStructure(
+  member: OrgMember,
+  path: string[] = []
+): Array<{ member: OrgMember; path: string[] }> {
+  const currentPath = [...path, member.name];
+  const result: Array<{ member: OrgMember; path: string[] }> = [
+    { member, path: currentPath },
+  ];
+
   if (member.children) {
-    member.children.forEach(child => {
-      result.push(...flattenOrgStructure(child, currentPath))
-    })
+    member.children.forEach((child) => {
+      result.push(...flattenOrgStructure(child, currentPath));
+    });
   }
-  
-  return result
+
+  return result;
 }
 
 // Composant pour afficher un nœud hiérarchique avec ses enfants
-function HierarchyNode({ 
-  member, 
-  delay, 
-  isCollapsed, 
-  depth = 0 
-}: { 
-  member: OrgMember
-  delay: number
-  isCollapsed: boolean
-  depth?: number
+function HierarchyNode({
+  member,
+  delay,
+  isCollapsed,
+  depth = 0,
+}: {
+  member: OrgMember;
+  delay: number;
+  isCollapsed: boolean;
+  depth?: number;
 }) {
-  const hasChildren = member.children && member.children.length > 0
-  
+  const hasChildren = member.children && member.children.length > 0;
+
   return (
     <div className="flex flex-col items-center">
       {/* Le nœud lui-même */}
       <CompactOrgCard member={member} delay={delay} isCollapsed={isCollapsed} />
-      
+
       {/* Ligne de connexion si des enfants existent */}
       {hasChildren && !isCollapsed && (
         <motion.div
@@ -530,7 +587,7 @@ function HierarchyNode({
           transition={{ duration: 0.3, delay: delay + 0.3 }}
         />
       )}
-      
+
       {/* Enfants */}
       {hasChildren && (
         <div className="relative">
@@ -538,34 +595,44 @@ function HierarchyNode({
           {!isCollapsed && member.children!.length > 1 && (
             <motion.div
               className="absolute h-0.5 bg-primary/30"
-              style={{ 
+              style={{
                 top: 0,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: `${Math.min(member.children!.length * 160, 800)}px`
+                left: "50%",
+                transform: "translateX(-50%)",
+                width: `${Math.min(member.children!.length * 160, 800)}px`,
               }}
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
               transition={{ duration: 0.4, delay: delay + 0.4 }}
             />
           )}
-          
+
           {/* Grid des enfants */}
-          <div className={`flex ${member.children!.length > 3 ? 'flex-wrap' : ''} justify-center gap-4 mt-4`}>
+          <div
+            className={`flex ${
+              member.children!.length > 3 ? "flex-wrap" : ""
+            } justify-center gap-4 mt-4`}
+          >
             {member.children!.map((child, idx) => (
-              <div key={`${child.name}-${idx}`} className="flex flex-col items-center">
+              <div
+                key={`${child.name}-${idx}`}
+                className="flex flex-col items-center"
+              >
                 {!isCollapsed && (
                   <motion.div
                     className="w-0.5 bg-primary/30"
                     style={{ height: 20 }}
                     initial={{ scaleY: 0 }}
                     animate={{ scaleY: 1 }}
-                    transition={{ duration: 0.2, delay: delay + 0.5 + idx * 0.1 }}
+                    transition={{
+                      duration: 0.2,
+                      delay: delay + 0.5 + idx * 0.1,
+                    }}
                   />
                 )}
-                <HierarchyNode 
-                  member={child} 
-                  delay={delay + 0.6 + idx * 0.2} 
+                <HierarchyNode
+                  member={child}
+                  delay={delay + 0.6 + idx * 0.2}
                   isCollapsed={isCollapsed}
                   depth={depth + 1}
                 />
@@ -575,18 +642,21 @@ function HierarchyNode({
         </div>
       )}
     </div>
-  )
+  );
 }
 
 export default function SolarOrgChart() {
-  const containerRef = useRef(null)
-  const [isCollapsed, setIsCollapsed] = useState(false)
-  
+  const containerRef = useRef(null);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
   // Collecter tous les membres pour la vue compacte
-  const allMembers = flattenOrgStructure(orgStructure)
+  const allMembers = flattenOrgStructure(orgStructure);
 
   return (
-    <section className="relative h-full py-8 px-4 overflow-hidden" ref={containerRef}>
+    <section
+      className="relative h-full py-8 px-4 overflow-hidden"
+      ref={containerRef}
+    >
       {/* Ambient background rockets */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(8)].map((_, i) => (
@@ -595,16 +665,28 @@ export default function SolarOrgChart() {
             className="absolute opacity-10"
             style={{ left: `${5 + i * 12}%`, top: "100%" }}
             animate={{ y: "-250vh" }}
-            transition={{ duration: 15 + i * 2, repeat: Number.POSITIVE_INFINITY, ease: "linear", delay: i * 3 }}
+            transition={{
+              duration: 15 + i * 2,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "linear",
+              delay: i * 3,
+            }}
           >
             <svg width="20" height="35" viewBox="0 0 60 90" fill="none">
-              <path d="M30 0C30 0 10 20 10 45C10 62 18 72 18 72H42C42 72 50 62 50 45C50 20 30 0 30 0Z" fill="#60a5fa" />
+              <path
+                d="M30 0C30 0 10 20 10 45C10 62 18 72 18 72H42C42 72 50 62 50 45C50 20 30 0 30 0Z"
+                fill="#60a5fa"
+              />
             </svg>
           </motion.div>
         ))}
       </div>
 
-      <div className={`max-w-7xl mx-auto relative z-10 h-full flex flex-col ${isCollapsed ? "" : "overflow-y-auto"}`}>
+      <div
+        className={`max-w-7xl mx-auto relative z-10 h-full flex flex-col ${
+          isCollapsed ? "" : "overflow-y-auto"
+        }`}
+      >
         {/* Header with collapse button */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -616,7 +698,8 @@ export default function SolarOrgChart() {
             SpaceX <span className="text-primary">Organization</span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto mb-4">
-            Découvrez la structure hiérarchique de SpaceX avec les départements et services
+            Découvrez la structure hiérarchique de SpaceX avec les départements
+            et services
           </p>
 
           <motion.button
@@ -653,11 +736,11 @@ export default function SolarOrgChart() {
               {/* Grille compacte de tous les membres */}
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-w-6xl">
                 {allMembers.map(({ member }, idx) => (
-                  <CompactOrgCard 
-                    key={`${member.name}-${idx}`} 
-                    member={member} 
-                    delay={0} 
-                    isCollapsed={true} 
+                  <CompactOrgCard
+                    key={`${member.name}-${idx}`}
+                    member={member}
+                    delay={0}
+                    isCollapsed={true}
                   />
                 ))}
               </div>
@@ -671,7 +754,9 @@ export default function SolarOrgChart() {
                 ].map((item) => (
                   <div key={item.label} className="flex items-center gap-2">
                     <div className={`w-3 h-3 rounded-full ${item.color}`} />
-                    <span className="text-xs text-muted-foreground">{item.label}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {item.label}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -687,9 +772,9 @@ export default function SolarOrgChart() {
             >
               <div className="flex flex-col items-center">
                 {/* Structure hiérarchique complète */}
-                <HierarchyNode 
-                  member={orgStructure} 
-                  delay={0.2} 
+                <HierarchyNode
+                  member={orgStructure}
+                  delay={0.2}
                   isCollapsed={false}
                   depth={0}
                 />
@@ -704,11 +789,16 @@ export default function SolarOrgChart() {
                   {[
                     { label: "CEO & Direction", color: "bg-accent" },
                     { label: "Niveau Exécutif", color: "bg-primary" },
-                    { label: "Départements & Services", color: "bg-emerald-500" },
+                    {
+                      label: "Départements & Services",
+                      color: "bg-emerald-500",
+                    },
                   ].map((item) => (
                     <div key={item.label} className="flex items-center gap-3">
                       <div className={`w-4 h-4 rounded-full ${item.color}`} />
-                      <span className="text-sm text-muted-foreground">{item.label}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {item.label}
+                      </span>
                     </div>
                   ))}
                 </motion.div>
@@ -718,5 +808,5 @@ export default function SolarOrgChart() {
         </AnimatePresence>
       </div>
     </section>
-  )
+  );
 }
