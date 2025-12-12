@@ -16,42 +16,35 @@ const HIERARCHY = {
   departments: [
     {
       head: {
-        name: "Bret Johnsen",
-        title: "CFO & Strategic Acquisitions",
-        reports: 28,
-      },
-      reports: [
-        {
-          name: "Finance",
-          title: "Finance Department",
-          department: "Finance",
-        },
-        {
-          name: "IT",
-          title: "IT Department",
-          department: "Technology",
-        },
-      ],
-    },
-    {
-      head: {
         name: "Gwynne Shotwell",
         title: "President, COO & Director",
         reports: 70,
       },
       reports: [
         {
-          name: "Starlink Production",
-          title: "Starlink Production Engineering",
-          department: "Starlink",
-        },
-        {
           name: "Build & Flight",
           title: "Build & Flight Reliability",
           department: "Operations",
         },
         {
-          name: "Launch Operations",
+          name: "Customer Operations",
+          title: "Customer Operations & Integration",
+          department: "Operations",
+        },
+        {
+          name: "Commercial Sales",
+          title: "Commercial Sales",
+          department: "Sales",
+          reports: [
+            {
+              name: "Communications",
+              title: "Communications",
+              department: "Marketing",
+            },
+          ],
+        },
+        {
+          name: "Launch",
           title: "Launch Operations",
           department: "Launch",
           reports: [
@@ -61,6 +54,44 @@ const HIERARCHY = {
               department: "Launch",
             },
           ],
+        },
+      ],
+    },
+    {
+      head: {
+        name: "Bret Johnsen",
+        title: "CFO & Strategic Acquisitions",
+        reports: 28,
+      },
+      reports: [
+        {
+          name: "Accounting",
+          title: "Accounting",
+          department: "Finance",
+        },
+        {
+          name: "Finance",
+          title: "Finance",
+          department: "Finance",
+        },
+        {
+          name: "IT",
+          title: "IT",
+          department: "Technology",
+        },
+      ],
+    },
+    {
+      head: {
+        name: "Mark Juncosa",
+        title: "VP, Vehicle Engineering",
+        reports: 52,
+      },
+      reports: [
+        {
+          name: "Starlink Production",
+          title: "Starlink Production Engineering",
+          department: "Starlink",
         },
         {
           name: "Vehicle Engineering",
@@ -73,6 +104,11 @@ const HIERARCHY = {
               department: "Engineering",
             },
           ],
+        },
+        {
+          name: "Materials Engineering",
+          title: "Materials Engineering",
+          department: "Engineering",
         },
       ],
     },
