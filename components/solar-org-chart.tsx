@@ -22,11 +22,6 @@ const HIERARCHY = {
       },
       reports: [
         {
-          name: "Accounting",
-          title: "Accounting Department",
-          department: "Finance",
-        },
-        {
           name: "Finance",
           title: "Finance Department",
           department: "Finance",
@@ -46,26 +41,9 @@ const HIERARCHY = {
       },
       reports: [
         {
-          name: "Assistant to President",
-          title: "Assistant to President & COO",
-          department: "Operations",
-        },
-        {
-          name: "Early Careers",
-          title: "Early Careers & Programming",
-          department: "HR",
-        },
-        {
           name: "Starlink Production",
           title: "Starlink Production Engineering",
           department: "Starlink",
-          reports: [
-            {
-              name: "Mission Management",
-              title: "Mission Management",
-              department: "Operations",
-            },
-          ],
         },
         {
           name: "Build & Flight",
@@ -73,29 +51,7 @@ const HIERARCHY = {
           department: "Operations",
         },
         {
-          name: "Customer Operations",
-          title: "Customer Operations & Integration",
-          department: "Operations",
-        },
-        {
-          name: "Commercial Sales",
-          title: "Commercial Sales",
-          department: "Sales",
-          reports: [
-            {
-              name: "Communications",
-              title: "Communications",
-              department: "Marketing",
-            },
-          ],
-        },
-        {
-          name: "HR",
-          title: "Human Resources",
-          department: "HR",
-        },
-        {
-          name: "Launch",
+          name: "Launch Operations",
           title: "Launch Operations",
           department: "Launch",
           reports: [
@@ -107,28 +63,6 @@ const HIERARCHY = {
           ],
         },
         {
-          name: "Legal",
-          title: "Legal Department",
-          department: "Legal",
-          reports: [
-            {
-              name: "Acting Legal",
-              title: "Acting Legal",
-              department: "Legal",
-            },
-            {
-              name: "Satellite Policy",
-              title: "Satellite Policy",
-              department: "Legal",
-            },
-          ],
-        },
-        {
-          name: "Materials Engineering",
-          title: "Materials Engineering",
-          department: "Engineering",
-        },
-        {
           name: "Vehicle Engineering",
           title: "Vehicle Engineering",
           department: "Engineering",
@@ -136,11 +70,6 @@ const HIERARCHY = {
             {
               name: "Starship Engineering",
               title: "Starship Engineering",
-              department: "Engineering",
-            },
-            {
-              name: "Application Software",
-              title: "Application Software",
               department: "Engineering",
             },
           ],
@@ -343,18 +272,44 @@ export default function SolarOrgChart() {
     const container = scrollRef.current;
     if (!container) return;
 
-    const handleScroll = () => {
+    const handleScroll = (e: Event) => {
       setIsScrolled(container.scrollTop > 50);
+      // Empêcher la propagation du scroll vers le parent (slides)
+      e.stopPropagation();
     };
 
-    container.addEventListener("scroll", handleScroll);
+    container.addEventListener("scroll", handleScroll, { passive: false });
     return () => container.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Empêcher le swipe quand on est dans l'organigramme
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const isScrollingDown = e.deltaY > 0;
+      const isScrollingUp = e.deltaY < 0;
+      const isAtTop = scrollTop === 0;
+      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
+
+      // Permettre le scroll dans la div si on n'est pas aux extrémités
+      if ((isScrollingDown && !isAtBottom) || (isScrollingUp && !isAtTop)) {
+        e.stopPropagation();
+      }
+    };
+
+    container.addEventListener("wheel", handleWheel, { passive: false });
+    return () => container.removeEventListener("wheel", handleWheel);
   }, []);
 
   return (
     <div
       ref={scrollRef}
       className="h-full w-full flex flex-col overflow-y-auto pt-12"
+      onTouchStart={(e) => e.stopPropagation()}
+      onTouchMove={(e) => e.stopPropagation()}
     >
       <div className="max-w-7xl mx-auto w-full flex flex-col items-center px-2 mt-8">
         {/* Header */}
